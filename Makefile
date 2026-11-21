@@ -10,7 +10,8 @@ VENV ?= $(HOME)/.local/share/niyam-api-dev
 VENV_STAMP := $(VENV)/.installed
 API_REQUIREMENTS := services/api/requirements.txt services/api/requirements-dev.txt
 PLAYBOOK := ansible-playbook -i ansible/inventory/hosts.ini
-VAULT_FLAGS ?= --ask-vault-pass
+VAULT_PASS_FILE ?= $(HOME)/.niyam-vault-pass
+VAULT_FLAGS ?= $(if $(wildcard $(VAULT_PASS_FILE)),--vault-password-file "$(VAULT_PASS_FILE)",--ask-vault-pass)
 
 .PHONY: help dev down test test-local lint bootstrap cluster-up deploy check-tag
 

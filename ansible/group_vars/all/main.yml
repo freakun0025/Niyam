@@ -1,0 +1,32 @@
+---
+# Shared settings. Playbooks load this file through vars_files because Ansible only
+# auto-discovers group_vars next to the inventory or the playbook.
+
+# Release
+niyam_ns: niyam
+dockerhub_ns: freakun
+app_host: niyam.local
+
+# Cluster (context/ARCHITECTURE.md section 3.1)
+minikube_profile: niyam
+minikube_driver: docker
+minikube_kubernetes_version: v1.32.2
+minikube_cpus: 4
+minikube_memory: 9g
+minikube_disk_size: 40g
+minikube_ingress_publish: "127.0.0.1:80:80"
+minikube_addons:
+  - ingress
+  - metrics-server
+
+# CI host
+jenkins_user: jenkins
+jenkins_home: /var/lib/jenkins
+
+# Application
+app_log_level: INFO
+app_prompt_version: v1
+rollout_timeout_seconds: 180
+
+# Extension point for Teammate 2 (P3): Elastic version, heap sizes and hostnames.
+# Extension point for Teammate 2 (P4): Vault chart version and HPA bounds.
