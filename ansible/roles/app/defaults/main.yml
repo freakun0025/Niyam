@@ -1,0 +1,5 @@
+---
+app_base_templates:
+  - namespace.yaml.j2
+  - serviceaccount.yaml.j2
+  - configmap.yaml.j2
