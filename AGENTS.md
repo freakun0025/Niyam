@@ -7,17 +7,19 @@ This is the canonical instruction file. `CLAUDE.md` imports it. Keep it short, c
 The **DevOps pipeline is the graded product**; the app is intentionally small.
 
 ## 2. Source-of-truth order (higher wins)
-1. `docs/SPEC.md` / `docs/spec.pdf`: course spec (30 marks). **Never contradict it.**
-2. `docs/PRD.md`: requirements with IDs (FR-, DR-, AR-, IR-).
-3. `docs/ARCHITECTURE.md`: how it's built; decisions in §12.
-4. `docs/DATA_MODEL_AND_SCAFFOLDING.md`: schemas, folder layout, file skeletons.
-5. `docs/WHAT_WILL_BREAK.md`: known pitfalls. **Read §B before touching infra.**
+1. `context/SPEC.md` / `context/spec.pdf`: course spec (30 marks). **Never contradict it.**
+2. `context/PRD.md`: requirements with IDs (FR-, DR-, AR-, IR-).
+3. `context/ARCHITECTURE.md`: how it's built; decisions in §12.
+4. `context/DATA_MODEL_AND_SCAFFOLDING.md`: schemas, folder layout, file skeletons.
+5. `context/WHAT_WILL_BREAK.md`: known pitfalls. **Read §B before touching infra.**
 6. This file.
 
 If a request conflicts with 1–3, stop and say so; don't silently pick one.
 
 ## 3. Repo map
 ```
+context/           planning documents (spec, PRD, architecture, data model, pitfalls)
+docs/              documents written during the build (ADRs, HANDOFF.md, final report, evidence screenshots)
 services/api/      FastAPI app, RAG pipeline, ingest CLI, tests (Python 3.12)
 services/web/      nginx + static HTML/JS UI
 data/corpus/       manifest.yaml + raw PDFs (real corpus)     data/fixtures/  3-doc CI corpus
@@ -60,7 +62,7 @@ make vault-reseed   # re-run vault role (dev-mode Vault loses data on restart)
 - Prompts: versioned files `services/api/app/rag/prompts/v{N}.txt`. Changing behaviour = new file + bump `NIYAM_PROMPT_VERSION`. Never edit an old version in place.
 - Ansible: roles `defaults/main.yml` hold every tunable; templates end in `.yaml.j2`; one K8s object per template.
 - Shell scripts: `set -euo pipefail`, shellcheck clean.
-- Commits: Conventional Commits (`feat(api): …`, `ci: …`, `infra(ansible): …`). Small and frequent. **Both members commit every week.** It is graded in the viva.
+- Commits: Conventional Commits (`feat(api): …`, `ci(jenkins): …`, `feat(ansible): …`), small and frequent, following "Git & commit protocol" in `CLAUDE.md`. Humans make every commit. **Both teammates commit every week.** It is graded in the viva.
 
 ## 7. Definition of done for any change
 1. `make lint test` passes locally.
@@ -72,10 +74,15 @@ make vault-reseed   # re-run vault role (dev-mode Vault loses data on restart)
 ## 8. Ownership (for review and viva)
 | Area | Owner | Reviewer |
 |---|---|---|
-| `services/api`, `eval/`, prompts, corpus | Member A | Member B |
-| `Jenkinsfile`, `ansible/`, `infra/`, `scripts/` | Member B | Member A |
-| `services/web`, docs, report | shared | — |
-Each member must have meaningful commits in the *other* area too (e.g. A writes the `ingest` role, B writes the `/version` endpoint and its test).
+| Repo setup; P1 walking skeleton: api/web skeleton, Docker, Compose, Ansible roles `common`, `minikube`, `app`, base `Jenkinsfile`, smoke test | Teammate 1 | Teammate 2 |
+| P2 RAG app: roles `ollama`, `qdrant`, `ingest`, corpus manifest + fixtures, embedder, `/search`, `/ask`, refusal, citations UI, feedback, documents | Teammate 1 | Teammate 2 |
+| Golden eval set and `eval/run_eval.py` | Teammate 1 | Teammate 2 |
+| P3: ELK in Kubernetes (`elk` role, `infra/`) + Kibana dashboard | Teammate 2 | Teammate 1 |
+| P4: Vault + injector (including securing Qdrant), HPA + load test, zero-downtime check | Teammate 2 | Teammate 1 |
+| P5: Jenkins eval-gate stage, Trivy, post-deploy verify, `mark_good`/rollback, Kibana release-quality panel | Teammate 2 | Teammate 1 |
+| P6: demo rehearsal, report, backup recording | Shared | Each other |
+
+Each teammate reviews the other's PRs. Both must be able to explain everything in the viva.
 
 ## 9. When to stop and ask a human
 - A spec requirement seems impossible or ambiguous.

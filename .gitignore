@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment files and local secrets
+.env*
+!.env.example
+.vault_pass*
+*.vault-pass
+
+# Claude Code personal settings (.claude/settings.json is shared and committed)
+.claude/settings.local.json
+
+# Eval output (archived by Jenkins)
+eval/results/
+
+# Ansible
+*.retry
+ansible/.cache/
+
+# Kubeconfig files
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+.kube/
+
+# Logs
+*.log
