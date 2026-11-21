@@ -29,21 +29,21 @@ flowchart LR
 ## 3. Deployment topology (where each thing runs)
 
 ```
-┌──────────────────────────────── Laptop (Ubuntu, 16 GB) ─────────────────────────────────┐
-│  HOST (systemd)                                                                         │
-│   • Jenkins (native apt install, :8080)  ── runs docker, trivy, ansible, kubectl        │
+┌─────────────────────── Laptop (Windows 11 + Ubuntu WSL2, 16 GB) ────────────────────────┐
+│  UBUNTU WSL2 (systemd)                                                                  │
+│   • Jenkins (native, :8080)  ── runs docker, trivy, ansible, kubectl                    │
 │   • Ollama (native, OLLAMA_HOST=0.0.0.0:11434)  model: qwen2.5:1.5b-instruct            │
 │   • smee/ngrok relay  → exposes Jenkins /github-webhook/                                │
 │   • Docker Compose only for local dev + the CI eval-gate environment                    │
 │                                                                                         │
-│  MINIKUBE (docker driver, 4 CPU, memory cap 10 GB, disk 40 GB; addons ingress, metrics) │
+│  MINIKUBE (docker driver, 4 CPU, memory cap 9 GB, disk 40 GB; addons ingress, metrics)  │
 │   ns: niyam                                                                             │
 │    • Deployment niyam-api  (2–4 pods, HPA)  FastAPI + in-process embedder + Vault agent  │
 │    • Deployment niyam-web  (2 pods)         nginx serving static UI                      │
 │    • StatefulSet qdrant    (1 pod, PVC 2Gi) vector DB, API-key protected                 │
 │    • Job niyam-ingest-<sha8>                parse → chunk → embed → upsert               │
 │    • Service ollama (selector-less + EndpointSlice → host IP:11434)                      │
-│    • Ingress: niyam.local  /api → niyam-api,  / → niyam-web                              │
+│    • Ingress: niyam.local  /api, /version, /readyz → api,  / → web                       │
 │   ns: logging                                                                           │
 │    • DaemonSet filebeat          → logstash.logging.svc:5044                             │
 │    • Deployment logstash (1)     → elasticsearch.logging.svc:9200                        │
@@ -65,6 +65,18 @@ flowchart LR
 
 Say this split in one sentence in the report and the viva: *"The app and its observability run in Kubernetes;
 the CI server and the model server are external dependencies, as they would be in production."*
+
+### 3.1 Demo platform: Windows 11 + Ubuntu 24.04 on WSL2
+
+"Host" in this document means the **Ubuntu WSL2 distribution**. Docker Desktop provides the Docker engine through WSL integration.
+
+| Concern | Setting |
+|---|---|
+| WSL limits | `%USERPROFILE%\.wslconfig`: `memory=12GB`, `swap=8GB`, `processors=8` |
+| Cluster | `minikube start -p niyam --driver=docker --kubernetes-version=v1.32.2 --cpus=4 --memory=9g --disk-size=40g --embed-certs --ports=127.0.0.1:80:80` |
+| Browser access | Windows hosts file: `127.0.0.1 niyam.local kibana.niyam.local`. The ingress controller is published on `127.0.0.1:80` |
+| Access from Ubuntu | WSL does not copy that hosts entry, so scripts use `curl --resolve niyam.local:80:127.0.0.1` |
+| After a WSL restart | The API server's host port changes, and the first `minikube start` can fail while the cluster is healthy. `make cluster-up` retries once and refreshes the Jenkins kubeconfig |
 
 ## 4. Components
 
@@ -192,8 +204,8 @@ Say this in the viva; it shows you understand what HPA can and can't fix.
 
 | From | To | Port | How addressed |
 |---|---|---|---|
-| Browser | Ingress | 80 | `niyam.local` → `minikube ip` in `/etc/hosts` |
-| Ingress | niyam-api / niyam-web | 8000 / 8080 | ClusterIP Services |
+| Browser | Ingress | 80 | `niyam.local` → `127.0.0.1` in the Windows hosts file (§3.1) |
+| Ingress | niyam-api / niyam-web | 8000 / 8080 | ClusterIP Services. Prefix `/api` and exact `/version`, `/readyz` → api; `/` → web |
 | api / ingest | Qdrant | 6333 (HTTP) | `qdrant.niyam.svc:6333` |
 | api | Ollama | 11434 | Service `ollama` + manual Endpoints → host IP (written by the Ansible `ollama` role) |
 | Filebeat | Logstash | 5044 | `logstash.logging.svc` |
@@ -215,7 +227,7 @@ what its pods use. (VirtualBox/KVM drivers pre-allocate the full amount, so don'
 | Elasticsearch (heap 1g) | 1.5Gi / 2Gi | ~1.6 GB |
 | Logstash (heap 512m) | 768Mi / 1.2Gi | ~0.9 GB |
 | Kibana | 768Mi / 1.2Gi | ~0.8 GB |
-| **Minikube subtotal** | cap 10 GB | **≈ 6.3–7.5 GB** |
+| **Minikube subtotal** | cap 9 GB | **≈ 6.3–7.5 GB** |
 | Jenkins (host) | | ~0.8 GB |
 | Ollama + qwen2.5:1.5b-instruct q4 (host) | | ~1.8 GB |
 | OS + browser + IDE | | ~3 GB |
