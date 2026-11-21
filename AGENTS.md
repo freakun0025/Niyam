@@ -31,16 +31,20 @@ Jenkinsfile        the CI/CD pipeline     docker-compose.yml (dev)     docker-co
 ```
 
 ## 4. Commands
+Run these inside Ubuntu (WSL) from the repo root.
 ```bash
-make dev            # docker compose up: api, web, qdrant (uses host Ollama)
-make test           # unit tests inside Docker (same as CI)
-make test-local     # cd services/api && pytest -q   (needs: uv sync / pip install -e .[dev])
+make dev            # docker compose up: api, web (qdrant joins in P2; uses host Ollama)
+make down           # stop the Compose stack
+make test           # lint + unit tests inside Docker (same as CI)
+make test-local     # unit tests in a managed local virtual environment
 make lint           # ruff check + ruff format --check
-make eval           # run eval/run_eval.py against the dev stack
-make bootstrap      # ansible-playbook ansible/playbooks/site.yml
-make deploy TAG=x   # ansible-playbook ansible/playbooks/deploy.yml -e image_tag=x
-make rollback       # ansible-playbook ansible/playbooks/rollback.yml
-make vault-reseed   # re-run vault role (dev-mode Vault loses data on restart)
+make cluster-up     # start minikube and refresh the Jenkins kubeconfig
+make bootstrap TAG=<sha>  # ansible-playbook ansible/playbooks/site.yml
+make deploy TAG=<sha>     # ansible-playbook ansible/playbooks/deploy.yml -e image_tag=<sha>
+# Added by later milestones:
+make eval           # P2: run eval/run_eval.py against the dev stack
+make vault-reseed   # P4: re-run vault role (dev-mode Vault loses data on restart)
+make rollback       # P5: ansible-playbook ansible/playbooks/rollback.yml
 ```
 
 ## 5. Hard rules (MUST / MUST NOT)
