@@ -1,0 +1,134 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --text: #1d2424;
+  --muted: #586463;
+  --line: #d9dcd7;
+  --accent: #0f6b5c;
+  --online: #16845b;
+  --offline: #b42318;
+  --pending: #8a6d1d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121716;
+    --surface: #1a2120;
+    --text: #edf1ef;
+    --muted: #a4b0ad;
+    --line: #2e3836;
+    --accent: #62c9b4;
+    --online: #4cc38a;
+    --offline: #ff8a7a;
+    --pending: #e2c15b;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+.site-header,
+.content,
+.site-footer {
+  width: min(100%, 760px);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding-block: 24px;
+}
+
+.brand {
+  color: var(--accent);
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.brand-note,
+.version {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.content {
+  flex: 1;
+  padding-block: 48px;
+}
+
+h1 {
+  max-width: 18ch;
+  margin: 0 0 16px;
+  font-size: clamp(2rem, 7vw, 3.25rem);
+  line-height: 1.1;
+}
+
+.lead {
+  max-width: 60ch;
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 1.125rem;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.875rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pending);
+}
+
+.status-dot[data-state="online"] {
+  background: var(--online);
+}
+
+.status-dot[data-state="offline"] {
+  background: var(--offline);
+}
+
+.site-footer {
+  padding-block: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.disclaimer {
+  font-weight: 600;
+}
+
+code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  overflow-wrap: anywhere;
+}
