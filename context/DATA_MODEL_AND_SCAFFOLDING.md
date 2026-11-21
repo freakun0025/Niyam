@@ -385,7 +385,7 @@ COPY data/corpus /data/corpus
 COPY data/fixtures /data/fixtures
 USER 10001
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log", "--timeout-graceful-shutdown", "25"]
+CMD ["uvicorn", "app.main:build_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--no-access-log", "--timeout-graceful-shutdown", "25"]
 ```
 
 ### 9.2 `docker-compose.yml` (dev)

@@ -1,0 +1,12 @@
+# Allowlist: only files the API image needs enter the build context.
+*
+!services/
+services/*
+!services/api/
+
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.ruff_cache
+**/.venv
+**/.env*
