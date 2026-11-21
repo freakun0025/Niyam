@@ -3,3 +3,20 @@ app_base_templates:
   - namespace.yaml.j2
   - serviceaccount.yaml.j2
   - configmap.yaml.j2
+
+app_workload_templates:
+  - api-deployment.yaml.j2
+  - api-service.yaml.j2
+  - web-deployment.yaml.j2
+  - web-service.yaml.j2
+  - ingress.yaml.j2
+
+app_web_replicas: 2
+app_ingress_timeout_seconds: 120
+
+app_api_resources:
+  requests: { cpu: 250m, memory: 512Mi }
+  limits: { cpu: "1", memory: 1Gi }
+app_web_resources:
+  requests: { cpu: 50m, memory: 32Mi }
+  limits: { cpu: 250m, memory: 128Mi }

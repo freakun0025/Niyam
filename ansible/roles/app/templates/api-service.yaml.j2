@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: niyam-api
+  namespace: {{ niyam_ns }}
+  labels:
+    app: niyam-api
+    app.kubernetes.io/part-of: niyam
+spec:
+  type: ClusterIP
+  selector:
+    app: niyam-api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http

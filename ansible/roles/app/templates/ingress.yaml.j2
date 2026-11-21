@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: niyam
+  namespace: {{ niyam_ns }}
+  labels:
+    app.kubernetes.io/part-of: niyam
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ app_ingress_timeout_seconds }}"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ app_ingress_timeout_seconds }}"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ app_host }}
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: niyam-api
+                port: { name: http }
+          - path: /version
+            pathType: Exact
+            backend:
+              service:
+                name: niyam-api
+                port: { name: http }
+          - path: /readyz
+            pathType: Exact
+            backend:
+              service:
+                name: niyam-api
+                port: { name: http }
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: niyam-web
+                port: { name: http }

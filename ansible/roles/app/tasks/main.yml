@@ -45,3 +45,24 @@
         state: present
         merge_type: merge
         template: release-configmap.yaml.j2
+
+    - name: Apply workloads, services and ingress
+      kubernetes.core.k8s:
+        state: present
+        apply: true
+        template: "{{ item }}"
+      loop: "{{ app_workload_templates }}"
+
+    # A failed rollout fails the play, which lets the pipeline stop the release.
+    - name: Wait for rollouts
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - "--context={{ minikube_profile }}"
+          - "--namespace={{ niyam_ns }}"
+          - rollout
+          - status
+          - "deployment/{{ item }}"
+          - "--timeout={{ rollout_timeout_seconds }}s"
+      loop: [niyam-api, niyam-web]
+      changed_when: false

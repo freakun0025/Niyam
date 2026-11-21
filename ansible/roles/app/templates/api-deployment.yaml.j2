@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niyam-api
+  namespace: {{ niyam_ns }}
+  labels:
+    app: niyam-api
+    app.kubernetes.io/part-of: niyam
+spec:
+  # No replicas field: the HPA added in P4 owns the replica count.
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: niyam-api
+  template:
+    metadata:
+      labels:
+        app: niyam-api
+        version: "{{ image_tag }}"
+      annotations:
+        checksum/config: "{{ lookup('ansible.builtin.template', 'configmap.yaml.j2') | hash('sha256') }}"
+{# P4 (Teammate 2): add Vault Agent annotations here, with Go templates inside raw tags. #}
+    spec:
+      serviceAccountName: niyam-api
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: "{{ dockerhub_ns }}/niyam-api:{{ image_tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: niyam-config
+          resources: {{ app_api_resources | to_json }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          startupProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 5"]
