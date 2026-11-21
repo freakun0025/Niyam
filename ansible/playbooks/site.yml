@@ -1,0 +1,22 @@
+---
+- name: Bootstrap the Niyam platform on this laptop
+  hosts: local
+  gather_facts: true
+  vars_files:
+    - ../group_vars/all/main.yml
+    - ../group_vars/all/vault.yml
+  roles:
+    - { role: common, tags: [common] }
+    - { role: minikube, tags: [cluster] }
+    # P2 (Teammate 1): - { role: ollama, tags: [ollama] }
+
+    # ── Extension point: Teammate 2 (P4) ──────────────────────────────
+    # Vault must run before elk because ELK pods get passwords from its injector.
+    # - { role: vault, tags: [vault] }
+
+    # ── Extension point: Teammate 2 (P3) ──────────────────────────────
+    # - { role: elk, tags: [elk] }
+
+    # P2 (Teammate 1): - { role: qdrant, tags: [qdrant] }
+    - { role: app, tags: [app] }
+    # P2 (Teammate 1): - { role: ingest, tags: [ingest] }
