@@ -1,6 +1,6 @@
 # DATA MODEL, SCAFFOLDING, FILES AND FOLDERS
 
-> Spec: `docs/SPEC.md`. Architecture: `docs/ARCHITECTURE.md`. Version pins below are starting points: pin exact
+> Spec: `context/SPEC.md`. Architecture: `context/ARCHITECTURE.md`. Version pins below are starting points: pin exact
 > patch versions on day 1 and record them in `ansible/group_vars/all/main.yml`.
 
 ## 0. Where data lives (there is no relational database, by design: ARCH ADR-8)
@@ -249,10 +249,13 @@ niyam/
 ├── docker-compose.ci.yml             # eval-gate env: api:<sha>, qdrant (ephemeral)
 ├── .dockerignore  .gitignore  .gitattributes  .trivyignore  .editorconfig
 │
-├── docs/
+├── context/                          # planning documents
 │   ├── spec.pdf  SPEC.md             # source of truth
 │   ├── PRD.md  ARCHITECTURE.md  ARCHITECTURE_ESSENTIAL.md
-│   ├── WHAT_WILL_BREAK.md  DATA_MODEL_AND_SCAFFOLDING.md
+│   ├── WHAT_WILL_BREAK.md  DATA_MODEL_AND_SCAFFOLDING.md  README.md
+│
+├── docs/                             # documents written during the build
+│   ├── HANDOFF.md                    # handoff between teammates
 │   ├── adr/0001-host-vs-cluster-split.md …   # one file per ARCH §12 decision you change
 │   └── report/  final-report.md, architecture.png, evidence/ (screenshots per PRD row)
 │

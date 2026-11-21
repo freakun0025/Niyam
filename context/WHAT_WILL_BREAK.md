@@ -49,7 +49,7 @@ Read before planning each phase. Each item: **symptom → cause → prevention �
 | B23 | Ingest Job name conflict on redeploy | Jobs are immutable | Job name `niyam-ingest-<sha8>`; `ttlSecondsAfterFinished: 600` | `kubectl delete job` |
 | B24 | Scanned PDFs give empty text → useless answers | RBI PDFs are sometimes image scans | Ingest logs `ingest.doc_skipped` when chars/page < 200; curate the manifest | — |
 | B25 | Trivy fails the build on base-image CVEs you can't fix | Unfixed CVEs | `--ignore-unfixed --severity CRITICAL`; `.trivyignore` with reasons | Make the scan non-blocking temporarily and say so |
-| B26 | Single-author git history | One person did all the infra | Ownership table in AGENTS §8 with cross-area commits; weekly check of `git shortlog -sn` | — |
+| B26 | Single-author git history | One person built everything | Ownership split in AGENTS §8 and PRD §11 (Teammate 1: foundation, P1, P2, eval runner; Teammate 2: P3, P4, P5; P6 shared); each commits their own milestone branch and reviews the other's PRs; weekly check of `git shortlog -sn` | — |
 | B27 | Works on one laptop only | Hard-coded paths/IPs; different OS | Everything in `ansible/group_vars`; the demo machine is fixed and named in the README; Ubuntu recommended (WSL2 networking breaks B1/B19) | Demo on the fixed machine only |
 | B28 | Minikube on Mac/Windows behaves differently | Docker Desktop networking, no `host.minikube.internal` parity | Pick one Ubuntu demo machine early (A10) | — |
 | B29 | Rollback never runs after a failed deploy | `DEPLOYED` declared in the Jenkinsfile `environment{}` block, which can't be reassigned from `script{}` | Set `env.DEPLOYED` only inside `script{}` (DATA_MODEL §9.4) | `make rollback` |

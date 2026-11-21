@@ -3,9 +3,9 @@
 | | |
 |---|---|
 | **Course** | CSE 816 Software Production Engineering — Final Project (30 marks) |
-| **Spec (source of truth)** | `docs/spec.pdf` (text copy: `docs/SPEC.md`). Spec beats this PRD on any conflict. |
+| **Spec (source of truth)** | `context/spec.pdf` (text copy: `context/SPEC.md`). Spec beats this PRD on any conflict. |
 | **Status** | Draft v1 — 21 Nov 2026 |
-| **Team** | Member A (app + RAG + eval), Member B (pipeline + infra). Spec does not fix team size — adjust if different. |
+| **Team** | Two people. **Teammate 1:** app and foundation. **Teammate 2:** platform and release quality. Scope in §11. |
 | **Product name** | **Niyam** (Hindi: "rule") |
 
 ---
@@ -52,7 +52,7 @@ requirement below traces either to the spec or to making that demo reliable.
 - User accounts/login, chat history, streaming tokens, multi-turn conversation.
 - Paid cloud, managed Kubernetes, paid LLM APIs.
 - Tools not named in the spec (Argo CD, Prometheus/Grafana, OpenTelemetry, Helm charts for our own app,
-  Terraform, Kafka). See `docs/WHAT_WILL_BREAK.md` §C for why.
+  Terraform, Kafka). See `context/WHAT_WILL_BREAK.md` §C for why.
 - OCR of scanned PDFs, Hindi-language support, legal-grade accuracy.
 
 ## 5. Functional requirements — the app
@@ -77,7 +77,7 @@ listed in `data/corpus/manifest.yaml`. A 3-document fixture corpus (`data/fixtur
 
 | ID | Spec text | Requirement | Acceptance (demo-observable) |
 |---|---|---|---|
-| DR-1 | Git and GitHub | Monorepo on GitHub, protected `main`, PRs, Conventional Commits, **both members committing throughout**. | `git shortlog -sn` shows both members, spread across weeks. |
+| DR-1 | Git and GitHub | Monorepo on GitHub, protected `main`, one branch per milestone and owner, PRs merged with a merge commit and reviewed by the other teammate when possible, Conventional Commits, **both teammates committing throughout** (Teammate 1: foundation and app; Teammate 2: platform and release quality). | `git shortlog -sn` shows both teammates, spread across weeks. |
 | DR-2 | GitHub Hook Trigger for GITScm Polling | GitHub webhook → Jenkins job with `githubPush()` trigger. Fallback: Poll SCM every 2 min. | Push → build starts within ~10 s (webhook) or 2 min (fallback). |
 | DR-3 | Jenkins pipelines | Declarative `Jenkinsfile` in repo, with stages: Init → Unit tests → Build → Eval gate → Scan → Push → Deploy → Verify, and auto-rollback in `post { failure }`. | Stage view green; failing a stage stops the release. |
 | DR-4 | Running automated tests | pytest unit tests (run inside a Docker `test` build target) + integration tests + RAG eval gate on Docker Compose. | A failing test fails the build. |
@@ -136,18 +136,20 @@ Assume ~2.5 weeks if the demo window matches last year's (2nd week of December).
 
 | Phase | Outcome | Owner | Target |
 |---|---|---|---|
-| P0 Setup | Repo, Docker Hub, Jenkins on host, minikube, ngrok/smee for webhook, Ollama on host | B (A helps) | Day 1–2 |
-| **P1 Walking skeleton** | A "hello" FastAPI + static web going **push → Jenkins → Docker Hub → Ansible → K8s** end to end | B + A | **Day 3–5. This protects the 20 marks.** |
-| P2 RAG app | Ingest Job, Qdrant, `/search`, `/ask`, refusal, UI with citations, unit tests | A | Day 4–9 |
-| P3 ELK | `elk` role: ES StatefulSet, Logstash, Kibana + Ingress, Filebeat DaemonSet, users, index template, Kibana dashboard | B | Day 6–10 |
-| P4 Advanced | Vault + injector, HPA + load test, roles cleanup, zero-downtime script | B (A: app reads secret file) | Day 9–12 |
-| P5 Innovation | Golden set, eval runner, CI gate, post-deploy verify, auto-rollback, Kibana panel | A (B wires Jenkins) | Day 10–14 |
-| P6 Hardening | Demo rehearsal ×3, backup screen recording, report, viva prep (`ARCHITECTURE_ESSENTIAL.md`) | Both | Last 3 days |
+| P0 Setup | Repo, Docker Hub, Jenkins on host, minikube, ngrok/smee for webhook, Ollama on host | Teammate 1 | Day 1–2 |
+| **P1 Walking skeleton** | api/web skeleton, Docker, Compose, base Ansible roles (`common`, `minikube`, `app`), base Jenkinsfile and smoke test going **push → Jenkins → Docker Hub → Ansible → K8s** end to end | Teammate 1 | **Day 3–5. This protects the 20 marks.** |
+| P2 RAG app | `ollama`, `qdrant` and `ingest` roles, corpus manifest + fixtures, embedder, `/search`, `/ask`, refusal, citations UI, feedback, documents, tests, golden eval set and `eval/run_eval.py` | Teammate 1 | Day 4–9 |
+| P3 ELK | `elk` role: ES StatefulSet, Logstash, Kibana + Ingress, Filebeat DaemonSet, users, index template, Kibana dashboard | Teammate 2 | Day 6–10 |
+| P4 Advanced | Vault + injector (including securing Qdrant), HPA + load test, zero-downtime check | Teammate 2 (the app already reads the secret file) | Day 9–12 |
+| P5 Release gate | Jenkins eval-gate stage, Trivy scan, post-deploy verify, `mark_good`/rollback, Kibana release-quality panel | Teammate 2 (uses Teammate 1's `eval/run_eval.py`) | Day 10–14 |
+| P6 Hardening | Demo rehearsal ×3, backup screen recording, report, viva prep (`ARCHITECTURE_ESSENTIAL.md`) | Shared | Last 3 days |
+
+Each teammate reviews the other's PRs, and both must be able to explain everything in the viva.
 
 ## 12. Open questions
 
 1. Final demo date and report format/length (the spec is silent).
-2. Team size (the spec is silent; this PRD assumes 2).
+2. ~~Team size~~ **Resolved:** two teammates (see §11).
 3. Does "Vault" mean HashiCorp Vault or `ansible-vault`? **We do both** to be safe (see WHAT_WILL_BREAK §A).
 4. ~~Where does ELK run?~~ **Resolved:** inside Kubernetes (ns `logging`). See ARCHITECTURE §3 and ADR-2.
 5. Is a public Docker Hub repo OK? (Private repos need an imagePullSecret.)

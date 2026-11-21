@@ -1,6 +1,6 @@
 # ARCHITECTURE — ESSENTIAL (one page, learn this for the viva)
 
-**Niyam** = RBI/SEBI circular Q&A with citations (RAG on a local LLM) + a full DevOps pipeline that follows `docs/spec.pdf`.
+**Niyam** = RBI/SEBI circular Q&A with citations (RAG on a local LLM) + a full DevOps pipeline that follows `context/spec.pdf`.
 **Domain marks:** Finance + MLOps/AIOps. **Innovation:** eval-gated release with auto-rollback.
 
 ```

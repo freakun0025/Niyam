@@ -1,6 +1,6 @@
 # ARCHITECTURE — Niyam
 
-> Spec: `docs/SPEC.md` (wins on conflict). Requirements: `docs/PRD.md`. One-page viva version: `docs/ARCHITECTURE_ESSENTIAL.md`.
+> Spec: `context/SPEC.md` (wins on conflict). Requirements: `context/PRD.md`. One-page viva version: `context/ARCHITECTURE_ESSENTIAL.md`.
 
 ## 1. Architectural principles
 

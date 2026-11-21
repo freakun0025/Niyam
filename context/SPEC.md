@@ -1,9 +1,9 @@
-# SPEC — CSE 816 Final Project Guidelines (text copy of `docs/spec.pdf`)
+# SPEC — CSE 816 Final Project Guidelines (text copy of `context/spec.pdf`)
 
-> **This is the single source of truth for the project.** `docs/spec.pdf` is the original; this file is a
+> **This is the single source of truth for the project.** `context/spec.pdf` is the original; this file is a
 > faithful text copy so humans and coding agents can grep it. If anything in any other project document
 > disagrees with this file, **this file wins**. Do not edit the wording below — add interpretations to
-> `docs/WHAT_WILL_BREAK.md` (§A, "Spec interpretations") instead.
+> `context/WHAT_WILL_BREAK.md` (§A, "Spec interpretations") instead.
 
 ---
 
