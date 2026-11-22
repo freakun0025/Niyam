@@ -1,0 +1,9 @@
+---
+ingest_manifest: /data/corpus/manifest.yaml
+ingest_ttl_seconds: 600
+ingest_deadline_seconds: 1800
+ingest_wait_retries: 370
+ingest_wait_delay_seconds: 5
+ingest_resources:
+  requests: { cpu: 250m, memory: 512Mi }
+  limits: { cpu: "1", memory: 1Gi }

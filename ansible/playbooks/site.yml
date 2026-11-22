@@ -8,7 +8,7 @@
   roles:
     - { role: common, tags: [common] }
     - { role: minikube, tags: [cluster] }
-    # P2 (Teammate 1): - { role: ollama, tags: [ollama] }
+    - { role: ollama, tags: [ollama] }
 
     # ── Extension point: Teammate 2 (P4) ──────────────────────────────
     # Vault must run before elk because ELK pods get passwords from its injector.
@@ -17,6 +17,6 @@
     # ── Extension point: Teammate 2 (P3) ──────────────────────────────
     # - { role: elk, tags: [elk] }
 
-    # P2 (Teammate 1): - { role: qdrant, tags: [qdrant] }
+    - { role: qdrant, tags: [qdrant] }
     - { role: app, tags: [app] }
-    # P2 (Teammate 1): - { role: ingest, tags: [ingest] }
+    - { role: ingest, tags: [ingest] }

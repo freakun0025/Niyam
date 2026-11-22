@@ -1,0 +1,3 @@
+version: 1
+ci: { hit_at_k: 0.80, keyword_recall: 0.60, citation_rate: 0.90, refusal_accuracy: 0.80, p95_search_ms: 1500 }
+live: { hit_at_k: 0.80, citation_rate: 0.90, refusal_accuracy: 0.80, p95_search_ms: 1000 }

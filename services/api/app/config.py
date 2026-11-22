@@ -26,15 +26,17 @@ class Settings(BaseSettings):
     qdrant_collection: str = "circulars_v1"
 
     ollama_url: str = "http://ollama.niyam.svc:11434"
-    llm_model: str = "qwen2.5:1.5b-instruct"
+    llm_model: str = "qwen2.5:3b"
     llm_timeout_s: int = Field(default=60, gt=0)
     llm_max_tokens: int = Field(default=256, gt=0)
     llm_temperature: float = Field(default=0.1, ge=0.0, le=2.0)
 
     embed_model: str = "BAAI/bge-small-en-v1.5"
     embed_cache: Path = Path("/models")
+    embed_offline: bool = False  # True in the image, where the model is baked in.
+    embed_threads: int = Field(default=1, ge=1)  # Matches the pod's 1 CPU limit.
     prompt_version: str = "v1"
-    refusal_threshold: float = Field(default=0.35, ge=0.0, le=1.0)
+    refusal_threshold: float = Field(default=0.68, ge=0.0, le=1.0)
     corpus_manifest: Path = Path("/data/corpus/manifest.yaml")
 
     def resolved_qdrant_api_key(self) -> str | None:

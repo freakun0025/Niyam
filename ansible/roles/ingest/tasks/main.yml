@@ -1,0 +1,90 @@
+---
+- name: Validate the release tag
+  ansible.builtin.assert:
+    that:
+      - image_tag is defined
+      - image_tag is match('^[0-9a-f]{7,40}$')
+    fail_msg: "image_tag must be a git SHA, got: {{ image_tag | default('nothing') }}"
+    quiet: true
+
+- name: Name this ingest run
+  ansible.builtin.set_fact:
+    ingest_job_name: "niyam-ingest-{{ image_tag[:8] }}"
+
+- name: Run the ingest Job
+  module_defaults:
+    kubernetes.core.k8s:
+      context: "{{ minikube_profile }}"
+    kubernetes.core.k8s_info:
+      context: "{{ minikube_profile }}"
+  block:
+    - name: Read any existing Job for this release
+      kubernetes.core.k8s_info:
+        api_version: batch/v1
+        kind: Job
+        name: "{{ ingest_job_name }}"
+        namespace: "{{ niyam_ns }}"
+      register: ingest_existing
+
+    - name: Decide whether to replace the existing Job
+      ansible.builtin.set_fact:
+        ingest_replace: >-
+          {{ ingest_existing.resources | length > 0 and
+             (force_ingest | default(false) | bool or
+              (ingest_existing.resources[0].status.conditions | default([])
+               | selectattr('type', 'equalto', 'Failed')
+               | selectattr('status', 'equalto', 'True') | list | length > 0)) }}
+
+    # Jobs are immutable, so a failed or forced run must be deleted first.
+    - name: Remove the old Job
+      kubernetes.core.k8s:
+        state: absent
+        api_version: batch/v1
+        kind: Job
+        name: "{{ ingest_job_name }}"
+        namespace: "{{ niyam_ns }}"
+        delete_options:
+          propagationPolicy: Foreground
+        wait: true
+        wait_timeout: 60
+      when: ingest_replace | bool
+
+    - name: Create the Job
+      kubernetes.core.k8s:
+        state: present
+        template: ingest-job.yaml.j2
+      when: ingest_existing.resources | length == 0 or ingest_replace | bool
+
+    - name: Wait for the Job to finish
+      kubernetes.core.k8s_info:
+        api_version: batch/v1
+        kind: Job
+        name: "{{ ingest_job_name }}"
+        namespace: "{{ niyam_ns }}"
+      register: ingest_job
+      until: >-
+        ingest_job.resources | length > 0 and
+        (ingest_job.resources[0].status.conditions | default([])
+         | selectattr('type', 'in', ['Complete', 'Failed'])
+         | selectattr('status', 'equalto', 'True') | list | length > 0)
+      retries: "{{ ingest_wait_retries }}"
+      delay: "{{ ingest_wait_delay_seconds }}"
+
+    - name: Read the Job logs if it failed
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - "--context={{ minikube_profile }}"
+          - "--namespace={{ niyam_ns }}"
+          - logs
+          - "job/{{ ingest_job_name }}"
+          - --tail=20
+      register: ingest_logs
+      changed_when: false
+      failed_when: false
+      when: ingest_job.resources[0].status.succeeded | default(0) == 0
+
+    - name: Fail the release if ingest failed
+      ansible.builtin.fail:
+        msg: "{{ ingest_job_name }} failed: {{ ingest_logs.stdout_lines | default([]) | last | default('no logs') }}"
+      when: ingest_job.resources[0].status.succeeded | default(0) == 0

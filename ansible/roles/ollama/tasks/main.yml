@@ -1,0 +1,66 @@
+---
+- name: Check that Ollama is running
+  ansible.builtin.uri:
+    url: "{{ ollama_api_url }}/api/tags"
+    return_content: true
+  register: ollama_tags
+
+- name: Pull the language model
+  ansible.builtin.uri:
+    url: "{{ ollama_api_url }}/api/pull"
+    method: POST
+    body_format: json
+    body:
+      model: "{{ ollama_model }}"
+      stream: false
+    timeout: "{{ ollama_pull_timeout_seconds }}"
+  when: ollama_model not in (ollama_tags.json.models | map(attribute='name') | list)
+  changed_when: true
+
+- name: Find the host address seen from the cluster
+  ansible.builtin.command:
+    argv: [docker, exec, "{{ minikube_profile }}", getent, ahostsv4, "{{ ollama_host_name }}"]
+  register: ollama_host_lookup
+  changed_when: false
+
+- name: Store the host address
+  ansible.builtin.set_fact:
+    ollama_host_ip: "{{ ollama_host_lookup.stdout_lines[0].split()[0] }}"
+
+- name: Confirm the cluster node can reach Ollama
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "{{ minikube_profile }}"
+      - curl
+      - --fail
+      - --silent
+      - --max-time
+      - "5"
+      - "http://{{ ollama_host_ip }}:{{ ollama_port }}/api/version"
+  changed_when: false
+
+- name: Publish Ollama inside the cluster
+  module_defaults:
+    kubernetes.core.k8s:
+      context: "{{ minikube_profile }}"
+      state: present
+      apply: true
+  block:
+    - name: Ensure the namespace exists
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ niyam_ns }}"
+            labels:
+              app.kubernetes.io/part-of: niyam
+
+    - name: Apply the Service and EndpointSlice
+      kubernetes.core.k8s:
+        template: "{{ item }}"
+      loop:
+        - ollama-service.yaml.j2
+        - ollama-endpointslice.yaml.j2

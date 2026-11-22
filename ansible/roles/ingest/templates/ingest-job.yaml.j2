@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ ingest_job_name }}
+  namespace: {{ niyam_ns }}
+  labels:
+    app: niyam-ingest
+    version: "{{ image_tag }}"
+    app.kubernetes.io/part-of: niyam
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: {{ ingest_deadline_seconds }}
+  ttlSecondsAfterFinished: {{ ingest_ttl_seconds }}
+  template:
+    metadata:
+      labels:
+        app: niyam-ingest
+        version: "{{ image_tag }}"
+{# TODO P4 (Teammate 2): add the same Vault annotations as the API. See docs/HANDOFF.md. #}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: niyam-api
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ingest
+          image: "{{ dockerhub_ns }}/niyam-api:{{ image_tag }}"
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "app.ingest.cli", "--manifest", "{{ ingest_manifest }}"]
+          envFrom:
+            - configMapRef:
+                name: niyam-config
+          resources: {{ ingest_resources | to_json }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]

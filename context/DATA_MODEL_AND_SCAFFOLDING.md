@@ -79,7 +79,7 @@ class Filters(BaseModel):
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=500)
-    top_k: int = Field(4, ge=1, le=8)
+    top_k: int = Field(6, ge=1, le=8)
     filters: Filters | None = None
 
 class Citation(BaseModel):
@@ -97,12 +97,12 @@ class AskResponse(BaseModel):
     answer: str
     citations: list[Citation]
     refused: bool
-    model: str | None            # e.g. qwen2.5:1.5b-instruct; None when refused
+    model: str | None            # e.g. qwen2.5:3b; None when refused
     prompt_version: str          # e.g. v1
     app_version: str             # git short SHA
     latency_ms: Latency
 
-class SearchRequest(BaseModel):  # same fields as AskRequest
+class SearchRequest(BaseModel):  # same fields as AskRequest, but top_k defaults to 4
     ...
 class SearchResponse(BaseModel):
     request_id: str; hits: list[Citation]; app_version: str; latency_ms: Latency
@@ -172,10 +172,12 @@ replicas = 0 because it is a single-node ES (otherwise the index health stays ye
 
 `eval/golden.jsonl`, one case per line (target 25–30 cases: ~20 answerable, ~5 out-of-scope, a few with filters):
 ```json
-{"id":"dl-001","question":"What is the minimum cooling-off period for digital loans?","expected_doc_ids":["rbi-2025-digital-lending-directions"],"must_include":["cooling","one day"],"should_refuse":false,"generate":true,"fixture":true}
-{"id":"oos-001","question":"Who won the 2024 IPL final?","expected_doc_ids":[],"must_include":[],"should_refuse":true,"generate":false,"fixture":true}
+{"id":"dl-001","question":"What is the minimum cooling-off period for digital loans?","expected_doc_ids":["rbi-2025-digital-lending-directions"],"must_include":["one day|1 day"],"should_refuse":false,"generate":true,"fixture":true,"corpus":false}
+{"id":"oos-001","question":"Who won the 2024 IPL final?","expected_doc_ids":[],"must_include":[],"should_refuse":true,"generate":false,"fixture":true,"corpus":true}
 ```
-`fixture: true` = answerable from the 3-doc CI fixture corpus (used by the CI gate). `generate: true` = included in the generation subset.
+`fixture: true` = used with the 3-doc CI corpus. `corpus: true` = used with the real corpus. `generate: true` = included in the generation subset. In `must_include`, `|` separates accepted spellings and terms match whole words. An optional `filters` object is sent with the request.
+
+Runner contract: `python eval/run_eval.py --base-url <url> [--stage ci|live] [--subset fixture|corpus|all] [--limit N] [--host-header <host>] [--out <file>]`. Exit codes: `0` thresholds met, `1` a threshold failed, `2` setup or service error with no verdict. The readable table goes to stderr, and stdout carries one JSON `eval.result` event.
 
 `eval/thresholds.yaml`:
 ```yaml
@@ -224,15 +226,17 @@ Kubernetes auth roles: `niyam-api` → `bound_service_account_names=niyam-api`, 
 | `NIYAM_QDRANT_URL` | `http://qdrant.niyam.svc:6333` | |
 | `NIYAM_QDRANT_API_KEY_FILE` | `/vault/secrets/qdrant` | `NIYAM_QDRANT_API_KEY` is accepted for local dev only |
 | `NIYAM_QDRANT_COLLECTION` | `circulars_v1` | |
-| `NIYAM_OLLAMA_URL` | `http://ollama.niyam.svc:11434` | |
-| `NIYAM_LLM_MODEL` | `qwen2.5:1.5b-instruct` | |
+| `NIYAM_OLLAMA_URL` | `http://ollama.niyam.svc:11434` | The ConfigMap uses `ollama.<ns>.svc.cluster.local`, because Ollama on loopback rejects other Host headers |
+| `NIYAM_LLM_MODEL` | `qwen2.5:3b` | The 1.5B model produced too many wrong cited answers |
 | `NIYAM_LLM_TIMEOUT_S` | `60` | |
 | `NIYAM_LLM_MAX_TOKENS` | `256` | `num_predict` |
 | `NIYAM_LLM_TEMPERATURE` | `0.1` | seed fixed at 42 |
 | `NIYAM_EMBED_MODEL` | `BAAI/bge-small-en-v1.5` | |
 | `NIYAM_EMBED_CACHE` | `/models` | Baked in the image |
 | `NIYAM_PROMPT_VERSION` | `v1` | File `app/rag/prompts/v1.txt` |
-| `NIYAM_REFUSAL_THRESHOLD` | `0.35` | Tune once on the golden set, then freeze |
+| `NIYAM_REFUSAL_THRESHOLD` | `0.68` | Tuned for bge-small scores; confirm on the golden set, then freeze |
+| `NIYAM_EMBED_OFFLINE` | `false` | `true` in the image, which contains the model |
+| `NIYAM_EMBED_THREADS` | `1` | Matches the pod's 1 CPU limit |
 | `NIYAM_CORPUS_MANIFEST` | `/data/corpus/manifest.yaml` | Ingest only |
 | `NIYAM_LOG_LEVEL` | `INFO` | |
 
@@ -446,8 +450,6 @@ pipeline {
   stages {
     stage('Init') { steps { script {
       env.IMAGE_TAG = sh(returnStdout: true, script: 'git rev-parse --short=7 HEAD').trim()
-      env.CORPUS_CHANGED = sh(returnStatus: true,
-        script: 'git diff --quiet ${GIT_PREVIOUS_SUCCESSFUL_COMMIT:-HEAD~1} HEAD -- data/corpus') == 0 ? 'false' : 'true'
     } } }
     stage('Unit tests') { steps { sh 'docker build -f services/api/Dockerfile --target test -t niyam-api-test:${IMAGE_TAG} .' } }
     stage('Build images') { steps {
@@ -469,7 +471,7 @@ pipeline {
       withCredentials([string(credentialsId: 'ansible-vault-pass', variable: 'ANSIBLE_VAULT_PASS')]) {
         script { env.DEPLOYED = 'true' }
         sh '''ansible-playbook -i $INV ansible/playbooks/deploy.yml \
-              -e image_tag=$IMAGE_TAG -e dockerhub_ns=$DOCKERHUB_NS -e corpus_changed=$CORPUS_CHANGED \
+              -e image_tag=$IMAGE_TAG -e dockerhub_ns=$DOCKERHUB_NS \
               --vault-password-file ansible/scripts/vault-pass.sh'''
       }
     } }
@@ -512,9 +514,10 @@ All `sh` steps use single quotes, so the shell (not Groovy) expands variables an
     image_tag: "{{ image_tag | mandatory }}"
   roles:
     - vault                                   # idempotent reseed (dev-mode Vault)
+    - ollama
+    - qdrant
     - app
-    - role: ingest
-      when: (corpus_changed | default('false') | bool) or (force_ingest | default(false) | bool)
+    - ingest                                  # skips unchanged documents
 
 # ansible/playbooks/rollback.yml
 - name: Roll back to last good tag

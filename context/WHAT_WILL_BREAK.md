@@ -24,7 +24,7 @@ Read before planning each phase. Each item: **symptom → cause → prevention �
 
 | # | Symptom | Cause | Prevention | Fallback |
 |---|---|---|---|---|
-| B1 | Pods can't reach Ollama (`ConnectError`) | Ollama binds `127.0.0.1` by default; firewall | `OLLAMA_HOST=0.0.0.0` in a systemd override; `ufw allow from 192.168.49.0/24 to any port 11434`; Endpoints IP set by the `ollama` role | `/search` still works; demo `/ask` from a local compose stack |
+| B1 | Pods can't reach Ollama (`ConnectError`) | Docker Desktop host address changed, Ollama is stopped, or Ollama rejects the request's Host header | Keep Ollama on `127.0.0.1`; the `ollama` role tests the `host.docker.internal` address from the node before updating the EndpointSlice; pods call `ollama.<ns>.svc.cluster.local`, a name Ollama accepts | `/search` still works; demo `/ask` from a local compose stack |
 | B2 | Jenkins can't `kubectl` / `ansible` → "unable to connect" or cert errors | Kubeconfig belongs to your user, Jenkins runs as `jenkins`; minikube certs referenced by path | `minikube config set embed-certs true` **before** `minikube start`; `common` role copies the kubeconfig to `/var/lib/jenkins/.kube/config` (0600) | Run the deploy stage manually in the viva and explain |
 | B3 | Jenkins `docker: permission denied` | `jenkins` user not in the `docker` group | `usermod -aG docker jenkins && systemctl restart jenkins` (in the `common` role) | — |
 | B4 | Elasticsearch pod crash-loops or is OOMKilled | `vm.max_map_count` too low (the minikube docker node shares the host kernel); memory limit ≈ heap | `node.store.allow_mmap: false` in the ES config (removes the sysctl need); heap 1g with limit 2Gi; `fsGroup: 1000` so ES can write its PVC | `kubectl logs -n logging elasticsearch-0`; re-run the `elk` role |
@@ -36,7 +36,7 @@ Read before planning each phase. Each item: **symptom → cause → prevention �
 | B10 | Replica count jumps back to 2 after every deploy | `replicas:` in the Deployment fights the HPA | Omit `replicas` (AGENTS §5) | — |
 | B11 | Ansible template error `'Data' is undefined` | Vault Go templates `{{ … }}` parsed by Jinja | `{% raw %}…{% endraw %}` | — |
 | B12 | New pods stuck `Init:0/1` | Vault dev mode lost data after a restart; K8s auth role or policy missing | `make vault-reseed`; `deploy.yml` always runs the `vault` role first (fast, idempotent) | — |
-| B13 | 504 Gateway Timeout on `/ask` | nginx ingress default 60s timeout vs CPU LLM | `proxy-read-timeout: "120"`; `num_predict: 256`; model ≤ 1.5B | Show `/search` + a cached answer |
+| B13 | 504 Gateway Timeout on `/ask` | nginx ingress default 60s timeout vs CPU LLM | `proxy-read-timeout: "120"`; `num_predict: 256`; model ≤ 3B | Show `/search` + a cached answer |
 | B14 | Eval gate takes 15+ minutes | Running every golden question through a CPU LLM | All questions retrieval-only; generation subset of 8; `OLLAMA_KEEP_ALIVE=30m` so the model stays loaded | Reduce the subset to 5 |
 | B15 | Flaky eval → random red builds | LLM non-determinism | `temperature 0.1`, `seed 42`; gate on retrieval metrics + citation presence + refusal (deterministic); keyword recall threshold with margin | Re-run build once; if flaky twice, fix the question |
 | B16 | Webhook works at home, not on campus | Relay blocked / changed URL (ngrok free URL changes on restart) | smee.io stable channel URL, or ngrok reserved domain; Poll SCM fallback always configured | "Build Now" + explain |
