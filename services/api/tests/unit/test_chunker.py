@@ -68,6 +68,18 @@ def test_tiny_chunks_are_dropped() -> None:
     assert chunk_pages([PageText(1, "Page 4 of 40")]) == []
 
 
+def test_table_of_contents_is_dropped() -> None:
+    index = " ".join(f"Chapter {number} ........................ {number}" for number in range(9))
+
+    assert chunk_pages([PageText(1, index)]) == []
+
+
+def test_ordinary_ellipsis_is_kept() -> None:
+    text = f"{SENTENCE} The list continues .... and ends here. {SENTENCE}"
+
+    assert len(chunk_pages([PageText(1, text)])) == 1
+
+
 def test_chunking_is_deterministic() -> None:
     pages = [PageText(1, SENTENCE * 40), PageText(2, SENTENCE * 25)]
 

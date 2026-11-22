@@ -8,6 +8,7 @@ from app.ingest.pdf_parser import PageText
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 120
 MIN_CHUNK_CHARS = 80
+MAX_DOT_LEADERS = 3
 
 
 @dataclass(frozen=True)
@@ -40,6 +41,11 @@ def _split_text(text: str, size: int, overlap: int) -> Iterator[str]:
         start = boundary + 1 if boundary != -1 else next_start
 
 
+def _is_table_of_contents(text: str) -> bool:
+    """Dot leaders mark index pages, which match many queries but contain no rules."""
+    return text.count("....") > MAX_DOT_LEADERS
+
+
 def chunk_pages(
     pages: Iterable[PageText],
     size: int = CHUNK_SIZE,
@@ -53,6 +59,6 @@ def chunk_pages(
     chunks: list[Chunk] = []
     for page in pages:
         for text in _split_text(page.text, size, overlap):
-            if len(text) >= min_chars:
+            if len(text) >= min_chars and not _is_table_of_contents(text):
                 chunks.append(Chunk(chunk_index=len(chunks), page=page.number, text=text))
     return chunks
