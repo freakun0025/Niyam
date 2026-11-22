@@ -6,6 +6,7 @@
     <meta name="description" content="Plain-English answers from RBI and SEBI circulars, with citations." />
     <meta name="app-version" content="__APP_VERSION__" />
     <title>Niyam</title>
+    <link rel="icon" href="favicon.svg?v=__APP_VERSION__" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css?v=__APP_VERSION__" />
     <script src="app.js?v=__APP_VERSION__" defer></script>
   </head>
@@ -13,18 +14,95 @@
     <header class="site-header">
       <a class="brand" href="/">Niyam</a>
       <span class="brand-note">RBI and SEBI circulars</span>
-    </header>
-
-    <main class="content">
-      <h1>Regulation, answered with its source.</h1>
-      <p class="lead">
-        Niyam will answer plain-English questions from indexed RBI and SEBI circulars and cite the
-        exact document and page.
-      </p>
       <p class="status" role="status">
         <span class="status-dot" id="service-dot" aria-hidden="true"></span>
         <span id="service-status">Checking service…</span>
       </p>
+    </header>
+
+    <main class="content">
+      <h1>Regulation, answered with its source.</h1>
+      <p class="lead">Ask in plain English. Every answer cites the circular and page it came from.</p>
+
+      <form id="ask-form" class="ask-form" novalidate>
+        <label class="field-label" for="question">Your question</label>
+        <textarea
+          id="question"
+          name="question"
+          rows="3"
+          maxlength="500"
+          required
+          aria-describedby="question-count form-error"
+          placeholder="What is the minimum cooling-off period for digital loans?"
+        ></textarea>
+        <p class="counter" id="question-count">0 / 500</p>
+
+        <fieldset class="filters">
+          <legend>Filters</legend>
+          <label>
+            Regulator
+            <select id="regulator" name="regulator">
+              <option value="">All</option>
+              <option value="RBI">RBI</option>
+              <option value="SEBI">SEBI</option>
+            </select>
+          </label>
+          <label>
+            From year
+            <input id="year-from" name="year_from" type="number" min="1990" max="2100" inputmode="numeric" />
+          </label>
+          <label>
+            To year
+            <input id="year-to" name="year_to" type="number" min="1990" max="2100" inputmode="numeric" />
+          </label>
+        </fieldset>
+
+        <div class="form-actions">
+          <label class="toggle">
+            <input id="sources-only" type="checkbox" />
+            Sources only
+          </label>
+          <button id="submit" type="submit">Ask</button>
+        </div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+      </form>
+
+      <p class="loading" id="loading" role="status" hidden>
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="loading-text">Reading the circulars…</span>
+      </p>
+
+      <section class="result" id="result" aria-live="polite" hidden>
+        <article class="answer-card" id="answer-card" hidden>
+          <h2>Answer</h2>
+          <p class="answer" id="answer"></p>
+          <div class="feedback" id="feedback">
+            <span id="feedback-label">Was this helpful?</span>
+            <button type="button" class="feedback-button" data-rating="up">Yes</button>
+            <button type="button" class="feedback-button" data-rating="down">No</button>
+          </div>
+        </article>
+
+        <div id="sources" hidden>
+          <h2 id="sources-title">Sources</h2>
+          <ol class="citations" id="citations"></ol>
+        </div>
+      </section>
+
+      <template id="citation-template">
+        <li class="citation">
+          <p class="citation-meta">
+            <span class="citation-number"></span>
+            <span class="citation-regulator"></span>
+            <span class="citation-date"></span>
+            <span class="citation-page"></span>
+          </p>
+          <h3 class="citation-title"></h3>
+          <p class="citation-circular"></p>
+          <p class="citation-snippet"></p>
+          <a class="citation-link" target="_blank" rel="noopener noreferrer">Open official PDF</a>
+        </li>
+      </template>
     </main>
 
     <footer class="site-footer">
