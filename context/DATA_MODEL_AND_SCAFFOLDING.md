@@ -224,7 +224,7 @@ Kubernetes auth roles: `niyam-api` → `bound_service_account_names=niyam-api`, 
 | `NIYAM_QDRANT_URL` | `http://qdrant.niyam.svc:6333` | |
 | `NIYAM_QDRANT_API_KEY_FILE` | `/vault/secrets/qdrant` | `NIYAM_QDRANT_API_KEY` is accepted for local dev only |
 | `NIYAM_QDRANT_COLLECTION` | `circulars_v1` | |
-| `NIYAM_OLLAMA_URL` | `http://ollama.niyam.svc:11434` | |
+| `NIYAM_OLLAMA_URL` | `http://ollama.niyam.svc:11434` | The ConfigMap uses `ollama.<ns>.svc.cluster.local`, because Ollama on loopback rejects other Host headers |
 | `NIYAM_LLM_MODEL` | `qwen2.5:3b` | The 1.5B model produced too many wrong cited answers |
 | `NIYAM_LLM_TIMEOUT_S` | `60` | |
 | `NIYAM_LLM_MAX_TOKENS` | `256` | `num_predict` |

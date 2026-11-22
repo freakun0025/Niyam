@@ -14,13 +14,16 @@ NGROK_ARCHIVE := https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd6
 VAULT_PASS_FILE ?= $(HOME)/.niyam-vault-pass
 VAULT_FLAGS ?= $(if $(wildcard $(VAULT_PASS_FILE)),--vault-password-file "$(VAULT_PASS_FILE)",--ask-vault-pass)
 
-.PHONY: help dev down test test-local lint bootstrap cluster-up deploy check-tag agent-install relay-install
+.PHONY: help dev dev-ingest down test test-local lint bootstrap cluster-up deploy check-tag agent-install relay-install
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 dev: ## Build and run the local Compose stack
 	docker compose up --build
+
+dev-ingest: ## Index the test circulars into the local stack
+	docker compose run --rm --no-deps api python -m app.ingest.cli --manifest /data/fixtures/manifest.yaml
 
 down: ## Stop the local Compose stack
 	docker compose down

@@ -33,7 +33,7 @@ flowchart LR
 │  WINDOWS: Jenkins controller (service, :8080)                                           │
 │  UBUNTU WSL2 (systemd)                                                                  │
 │   • Jenkins agent (niyam-wsl) ── runs docker, trivy, ansible, kubectl                   │
-│   • Ollama (native, OLLAMA_HOST=0.0.0.0:11434)  model: qwen2.5:3b                       │
+│   • Ollama (native, 127.0.0.1:11434)  model: qwen2.5:3b                                 │
 │   • smee/ngrok relay  → exposes Jenkins /github-webhook/                                │
 │   • Docker Compose only for local dev + the CI eval-gate environment                    │
 │                                                                                         │
@@ -210,7 +210,7 @@ Say this in the viva; it shows you understand what HPA can and can't fix.
 | Browser | Ingress | 80 | `niyam.local` → `127.0.0.1` in the Windows hosts file (§3.1) |
 | Ingress | niyam-api / niyam-web | 8000 / 8080 | ClusterIP Services. Prefix `/api` and exact `/version`, `/readyz` → api; `/` → web |
 | api / ingest | Qdrant | 6333 (HTTP) | `qdrant.niyam.svc:6333` |
-| api | Ollama | 11434 | Service `ollama` + manual Endpoints → host IP (written by the Ansible `ollama` role) |
+| api | Ollama | 11434 | Service `ollama` + EndpointSlice → Docker Desktop's `host.docker.internal` address (found by the Ansible `ollama` role) |
 | Filebeat | Logstash | 5044 | `logstash.logging.svc` |
 | Logstash / Kibana | Elasticsearch | 9200 | `elasticsearch.logging.svc` |
 | Browser | Kibana | 80 → 5601 | Ingress `kibana.niyam.local` |

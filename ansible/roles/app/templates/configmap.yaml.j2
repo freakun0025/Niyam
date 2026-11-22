@@ -8,3 +8,7 @@ metadata:
 data:
   NIYAM_LOG_LEVEL: "{{ app_log_level }}"
   NIYAM_PROMPT_VERSION: "{{ app_prompt_version }}"
+  NIYAM_QDRANT_URL: "http://qdrant.{{ niyam_ns }}.svc:{{ qdrant_port }}"
+{# Ollama on loopback rejects unknown Host headers, but accepts names ending in .local. #}
+  NIYAM_OLLAMA_URL: "http://ollama.{{ niyam_ns }}.svc.cluster.local:{{ ollama_port }}"
+  NIYAM_LLM_MODEL: "{{ ollama_model }}"

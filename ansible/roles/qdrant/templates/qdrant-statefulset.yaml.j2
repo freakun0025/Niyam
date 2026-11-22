@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: qdrant
+  namespace: {{ niyam_ns }}
+  labels:
+    app: qdrant
+    app.kubernetes.io/part-of: niyam
+spec:
+  serviceName: qdrant
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qdrant
+  template:
+    metadata:
+      labels:
+        app: qdrant
+{# TODO P4 (Teammate 2): add Vault annotations and the API key wrapper. See docs/HANDOFF.md. #}
+    spec:
+      serviceAccountName: qdrant
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: qdrant
+          image: "{{ qdrant_image }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ qdrant_port }}
+          env:
+            - name: QDRANT__TELEMETRY_DISABLED
+              value: "true"
+          resources: {{ qdrant_resources | to_json }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          startupProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 2
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /livez, port: http }
+            periodSeconds: 10
+          volumeMounts:
+            - name: storage
+              mountPath: /qdrant/storage
+            - name: snapshots
+              mountPath: /qdrant/snapshots
+      volumes:
+        - name: snapshots
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: {{ qdrant_storage_size }}

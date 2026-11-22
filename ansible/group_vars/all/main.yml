@@ -28,5 +28,10 @@ app_log_level: INFO
 app_prompt_version: v1
 rollout_timeout_seconds: 180
 
+# Model server and vector database
+ollama_model: qwen2.5:3b
+ollama_port: 11434
+qdrant_port: 6333
+
 # Extension point for Teammate 2 (P3): Elastic version, heap sizes and hostnames.
 # Extension point for Teammate 2 (P4): Vault chart version and HPA bounds.

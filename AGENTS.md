@@ -33,7 +33,8 @@ Jenkinsfile        the CI/CD pipeline     docker-compose.yml (dev)     docker-co
 ## 4. Commands
 Run these inside Ubuntu (WSL) from the repo root.
 ```bash
-make dev            # docker compose up: api, web (qdrant joins in P2; uses host Ollama)
+make dev            # docker compose up: api, web, qdrant (uses host Ollama)
+make dev-ingest     # index the test circulars into the Compose stack
 make down           # stop the Compose stack
 make test           # lint + unit tests inside Docker (same as CI)
 make test-local     # unit tests in a managed local virtual environment

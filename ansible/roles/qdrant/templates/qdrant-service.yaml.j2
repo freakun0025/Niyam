@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: {{ niyam_ns }}
+  labels:
+    app: qdrant
+    app.kubernetes.io/part-of: niyam
+spec:
+  type: ClusterIP
+  selector:
+    app: qdrant
+  ports:
+    - name: http
+      port: {{ qdrant_port }}
+      targetPort: http

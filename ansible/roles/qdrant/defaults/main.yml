@@ -1,0 +1,10 @@
+---
+qdrant_image: qdrant/qdrant:v1.15.0-unprivileged
+qdrant_storage_size: 2Gi
+qdrant_resources:
+  requests: { cpu: 100m, memory: 256Mi }
+  limits: { cpu: "1", memory: 768Mi }
+qdrant_templates:
+  - qdrant-serviceaccount.yaml.j2
+  - qdrant-service.yaml.j2
+  - qdrant-statefulset.yaml.j2

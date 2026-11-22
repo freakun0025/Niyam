@@ -1,0 +1,5 @@
+---
+ollama_api_url: "http://127.0.0.1:{{ ollama_port }}"
+# Docker Desktop's name for the host, resolved from inside the minikube node.
+ollama_host_name: host.docker.internal
+ollama_pull_timeout_seconds: 1800

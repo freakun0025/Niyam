@@ -51,10 +51,12 @@ spec:
           startupProbe:
             httpGet: { path: /readyz, port: http }
             periodSeconds: 5
+            timeoutSeconds: 3
             failureThreshold: 30
           readinessProbe:
             httpGet: { path: /readyz, port: http }
             periodSeconds: 5
+            timeoutSeconds: 3
             failureThreshold: 3
           livenessProbe:
             httpGet: { path: /healthz, port: http }

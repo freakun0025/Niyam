@@ -1,0 +1,34 @@
+---
+- name: Deploy Qdrant
+  module_defaults:
+    kubernetes.core.k8s:
+      context: "{{ minikube_profile }}"
+      state: present
+      apply: true
+  block:
+    - name: Ensure the namespace exists
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ niyam_ns }}"
+            labels:
+              app.kubernetes.io/part-of: niyam
+
+    - name: Apply Qdrant objects
+      kubernetes.core.k8s:
+        template: "{{ item }}"
+      loop: "{{ qdrant_templates }}"
+
+- name: Wait for Qdrant
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - "--context={{ minikube_profile }}"
+      - "--namespace={{ niyam_ns }}"
+      - rollout
+      - status
+      - statefulset/qdrant
+      - "--timeout={{ rollout_timeout_seconds }}s"
+  changed_when: false

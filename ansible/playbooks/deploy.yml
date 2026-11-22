@@ -11,6 +11,9 @@
     # Dev-mode Vault loses data on restart, so reseed it before each release.
     # - { role: vault, tags: [vault] }
 
+    # Both are idempotent, so a release also repairs the services the API depends on.
+    - { role: ollama, tags: [ollama] }
+    - { role: qdrant, tags: [qdrant] }
     - { role: app, tags: [app] }
 
     # P2 (Teammate 1):
