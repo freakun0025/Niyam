@@ -10,10 +10,11 @@ VENV ?= $(HOME)/.local/share/niyam-api-dev
 VENV_STAMP := $(VENV)/.installed
 API_REQUIREMENTS := services/api/requirements.txt services/api/requirements-dev.txt
 PLAYBOOK := ansible-playbook -i ansible/inventory/hosts.ini
+NGROK_ARCHIVE := https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
 VAULT_PASS_FILE ?= $(HOME)/.niyam-vault-pass
 VAULT_FLAGS ?= $(if $(wildcard $(VAULT_PASS_FILE)),--vault-password-file "$(VAULT_PASS_FILE)",--ask-vault-pass)
 
-.PHONY: help dev down test test-local lint bootstrap cluster-up deploy check-tag agent-install
+.PHONY: help dev down test test-local lint bootstrap cluster-up deploy check-tag agent-install relay-install
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -58,3 +59,14 @@ agent-install: ## Install and start the Ubuntu Jenkins agent service
 	systemctl --user enable niyam-jenkins-agent.service
 	systemctl --user restart niyam-jenkins-agent.service
 	loginctl enable-linger "$$(id -un)"
+
+relay-install: ## Install and start the ngrok GitHub webhook tunnel
+	@command -v ngrok >/dev/null || { mkdir -p "$(HOME)/.local/bin"; curl -fsSL "$(NGROK_ARCHIVE)" | tar -xz -C "$(HOME)/.local/bin" ngrok; }
+	@mkdir -p "$(HOME)/.config/ngrok"
+	@test -s "$(HOME)/.config/ngrok/ngrok.yml" || { w="$$(wslpath "$$(cmd.exe /c 'echo %LOCALAPPDATA%' 2>/dev/null | tr -d '\r')")/ngrok/ngrok.yml"; test -s "$$w" && ln -sf "$$w" "$(HOME)/.config/ngrok/ngrok.yml"; } || { echo "Run: ngrok config add-authtoken <token>" >&2; exit 2; }
+	install -D -m 0644 scripts/ngrok-webhook-policy.yml "$(HOME)/.config/niyam/ngrok-webhook-policy.yml"
+	install -D -m 0755 scripts/webhook-relay.sh "$(HOME)/.local/bin/niyam-webhook-relay"
+	install -D -m 0644 scripts/niyam-webhook-relay.service "$(HOME)/.config/systemd/user/niyam-webhook-relay.service"
+	systemctl --user daemon-reload
+	systemctl --user enable niyam-webhook-relay.service
+	systemctl --user restart niyam-webhook-relay.service

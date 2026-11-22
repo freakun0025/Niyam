@@ -74,6 +74,7 @@ the CI server and the model server are external dependencies, as they would be i
 | Concern | Setting |
 |---|---|
 | Jenkins | The Windows controller schedules builds on Ubuntu agent `niyam-wsl`, which runs as the developer account and connects over WebSocket (`make agent-install`) |
+| GitHub webhook | GitHub → ngrok tunnel run by an Ubuntu service (`make relay-install`) → Jenkins `/github-webhook/`. A traffic policy blocks every other path, so the rest of Jenkins stays private |
 | WSL limits | `%USERPROFILE%\.wslconfig`: `memory=12GB`, `swap=8GB`, `processors=8` |
 | Cluster | `minikube start -p niyam --driver=docker --kubernetes-version=v1.32.2 --cpus=4 --memory=9g --disk-size=40g --embed-certs --ports=127.0.0.1:80:80` |
 | Browser access | Windows hosts file: `127.0.0.1 niyam.local kibana.niyam.local`. The ingress controller is published on `127.0.0.1:80` |

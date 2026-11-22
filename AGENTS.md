@@ -40,6 +40,7 @@ make test-local     # unit tests in a managed local virtual environment
 make lint           # ruff check + ruff format --check
 make cluster-up     # start minikube and update the kubeconfig
 make agent-install  # install and start the Ubuntu Jenkins agent service
+make relay-install  # install and start the ngrok GitHub webhook tunnel
 make bootstrap TAG=<sha>  # ansible-playbook ansible/playbooks/site.yml
 make deploy TAG=<sha>     # ansible-playbook ansible/playbooks/deploy.yml -e image_tag=<sha>
 # Added by later milestones:

@@ -1,0 +1,8 @@
+# Only GitHub webhook deliveries may pass through the public tunnel to Jenkins.
+on_http_request:
+  - expressions:
+      - "!(req.method == 'POST' && req.url.path == '/github-webhook/')"
+    actions:
+      - type: deny
+        config:
+          status_code: 404
