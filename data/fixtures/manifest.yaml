@@ -1,0 +1,33 @@
+# Small CI corpus: three real, text-based circulars.
+version: 1
+documents:
+  - doc_id: rbi-2025-digital-lending-directions
+    file: raw/rbi-2025-digital-lending-directions.pdf
+    title: "Reserve Bank of India (Digital Lending) Directions, 2025"
+    regulator: RBI
+    doc_type: master_direction
+    circular_no: "RBI/2025-26/36"
+    issued_date: 2025-05-08
+    source_url: "https://rbidocs.rbi.org.in/rdocs/notification/PDFs/36NT8C402BE7C2A349E0BFFF3C526668CD7A.PDF"
+    sha256: "2dd838cf9bcb58f27bec0c0f5485cf1c764ad238454dea8c9041516375d2321b"
+    tags: [digital-lending, nbfc, banks]
+  - doc_id: rbi-2024-key-facts-statement
+    file: raw/rbi-2024-key-facts-statement.pdf
+    title: "Key Facts Statement (KFS) for Loans & Advances"
+    regulator: RBI
+    doc_type: circular
+    circular_no: "RBI/2024-25/18"
+    issued_date: 2024-04-15
+    source_url: "https://rbidocs.rbi.org.in/rdocs/notification/PDFs/CIRCULARKFS1504242AE2500BAF494C2A82442B0B642705C1.PDF"
+    sha256: "0a9761e2624f0b912699ed1cde33bc660dce4da429ffdd36723363b8be2e4d86"
+    tags: [kfs, lending, disclosure]
+  - doc_id: sebi-2023-scores-odr-circular
+    file: raw/sebi-2023-scores-odr-circular.pdf
+    title: "Redressal of investor grievances through the SEBI Complaint Redressal (SCORES) Platform and linking it to Online Dispute Resolution platform"
+    regulator: SEBI
+    doc_type: circular
+    circular_no: "SEBI/HO/OIAE/IGRD/CIR/P/2023/156"
+    issued_date: 2023-09-20
+    source_url: "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2023/1695456916964.pdf"
+    sha256: "26c230d804f1bbfd190e8187698276544a4a025b4a9f74a23e72b11a0abff40b"
+    tags: [scores, investor-grievance, odr]
