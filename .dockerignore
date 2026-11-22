@@ -7,6 +7,8 @@ services/*
 data/*
 !data/corpus/
 !data/fixtures/
+!eval/
+eval/results
 
 **/__pycache__
 **/*.py[cod]

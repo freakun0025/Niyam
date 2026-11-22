@@ -14,7 +14,7 @@ NGROK_ARCHIVE := https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd6
 VAULT_PASS_FILE ?= $(HOME)/.niyam-vault-pass
 VAULT_FLAGS ?= $(if $(wildcard $(VAULT_PASS_FILE)),--vault-password-file "$(VAULT_PASS_FILE)",--ask-vault-pass)
 
-.PHONY: help dev dev-ingest down test test-local lint bootstrap cluster-up deploy check-tag agent-install relay-install
+.PHONY: help dev dev-ingest down test test-local lint eval eval-live bootstrap cluster-up deploy check-tag agent-install relay-install
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -40,7 +40,13 @@ test-local: $(VENV_STAMP) ## Run unit tests in a local virtual environment
 	cd services/api && PYTHONDONTWRITEBYTECODE=1 "$(VENV)/bin/python" -m pytest -q -p no:cacheprovider
 
 lint: $(VENV_STAMP) ## Check Python lint and formatting
-	cd services/api && "$(VENV)/bin/ruff" check --no-cache . && "$(VENV)/bin/ruff" format --no-cache --check .
+	cd services/api && "$(VENV)/bin/ruff" check --no-cache --config pyproject.toml . ../../eval && "$(VENV)/bin/ruff" format --no-cache --config pyproject.toml --check . ../../eval
+
+eval: $(VENV_STAMP) ## Evaluate the local stack on the test circulars
+	"$(VENV)/bin/python" eval/run_eval.py --base-url http://localhost:8000 --stage ci --subset fixture
+
+eval-live: $(VENV_STAMP) ## Evaluate the cluster on the real corpus
+	"$(VENV)/bin/python" eval/run_eval.py --base-url http://127.0.0.1 --host-header niyam.local --stage live --subset corpus
 
 check-tag:
 	@[[ "$(TAG)" =~ ^[0-9a-f]{7,40}$$ ]] || { echo "TAG must be a git SHA, for example: make $(firstword $(MAKECMDGOALS)) TAG=$$(git rev-parse --short=7 HEAD)" >&2; exit 2; }

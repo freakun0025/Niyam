@@ -16,8 +16,9 @@ FROM deps AS test
 COPY services/api/requirements-dev.txt .
 RUN pip install -r requirements-dev.txt
 COPY services/api/ .
-RUN ruff check --no-cache . \
-    && ruff format --no-cache --check . \
+COPY eval /eval
+RUN ruff check --no-cache --config pyproject.toml . /eval \
+    && ruff format --no-cache --config pyproject.toml --check . /eval \
     && pytest -q -p no:cacheprovider -m "not integration"
 
 FROM model AS runtime

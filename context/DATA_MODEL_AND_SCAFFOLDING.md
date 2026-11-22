@@ -172,10 +172,12 @@ replicas = 0 because it is a single-node ES (otherwise the index health stays ye
 
 `eval/golden.jsonl`, one case per line (target 25–30 cases: ~20 answerable, ~5 out-of-scope, a few with filters):
 ```json
-{"id":"dl-001","question":"What is the minimum cooling-off period for digital loans?","expected_doc_ids":["rbi-2025-digital-lending-directions"],"must_include":["cooling","one day"],"should_refuse":false,"generate":true,"fixture":true}
-{"id":"oos-001","question":"Who won the 2024 IPL final?","expected_doc_ids":[],"must_include":[],"should_refuse":true,"generate":false,"fixture":true}
+{"id":"dl-001","question":"What is the minimum cooling-off period for digital loans?","expected_doc_ids":["rbi-2025-digital-lending-directions"],"must_include":["one day|1 day"],"should_refuse":false,"generate":true,"fixture":true,"corpus":false}
+{"id":"oos-001","question":"Who won the 2024 IPL final?","expected_doc_ids":[],"must_include":[],"should_refuse":true,"generate":false,"fixture":true,"corpus":true}
 ```
-`fixture: true` = answerable from the 3-doc CI fixture corpus (used by the CI gate). `generate: true` = included in the generation subset.
+`fixture: true` = used with the 3-doc CI corpus. `corpus: true` = used with the real corpus. `generate: true` = included in the generation subset. In `must_include`, `|` separates accepted spellings and terms match whole words. An optional `filters` object is sent with the request.
+
+Runner contract: `python eval/run_eval.py --base-url <url> [--stage ci|live] [--subset fixture|corpus|all] [--limit N] [--host-header <host>] [--out <file>]`. Exit codes: `0` thresholds met, `1` a threshold failed, `2` setup or service error with no verdict. The readable table goes to stderr, and stdout carries one JSON `eval.result` event.
 
 `eval/thresholds.yaml`:
 ```yaml
