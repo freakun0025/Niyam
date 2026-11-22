@@ -3,7 +3,7 @@
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
+from pydantic import UUID4, BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
 CheckStatus = Literal["ok", "failed", "not_configured"]
 
@@ -92,3 +92,23 @@ class AskResponse(BaseModel):
     prompt_version: str
     app_version: str
     latency_ms: Latency
+
+
+class FeedbackRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    request_id: UUID4
+    rating: Literal["up", "down"]
+    comment: str | None = Field(None, max_length=500)
+
+
+class FeedbackResponse(BaseModel):
+    ok: Literal[True] = True
+
+
+class DocumentInfo(BaseModel):
+    doc_id: str
+    title: str
+    regulator: str
+    issued_date: date
+    chunks: int

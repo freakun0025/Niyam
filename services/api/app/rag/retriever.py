@@ -7,9 +7,10 @@ import httpx
 from qdrant_client import QdrantClient, models
 from qdrant_client.http.exceptions import ResponseHandlingException, UnexpectedResponse
 
-from app.models.schemas import Citation, Filters
+from app.models.schemas import Citation, DocumentInfo, Filters
 
 SNIPPET_MAX_CHARS = 300
+DOCUMENT_SCROLL_PAGE_SIZE = 256
 
 
 class VectorDbUnavailable(RuntimeError):
@@ -81,6 +82,35 @@ def retrieve(
         )
         for point in points
     ]
+
+
+def list_documents(client: QdrantClient, collection: str) -> list[DocumentInfo]:
+    """Summarize indexed documents, newest first."""
+    documents: dict[str, DocumentInfo] = {}
+    offset = None
+    try:
+        while True:
+            points, offset = client.scroll(
+                collection,
+                limit=DOCUMENT_SCROLL_PAGE_SIZE,
+                offset=offset,
+                with_payload=["doc_id", "title", "regulator", "issued_date"],
+                with_vectors=False,
+            )
+            for point in points:
+                payload = point.payload
+                document = documents.get(payload["doc_id"])
+                if document is None:
+                    documents[payload["doc_id"]] = DocumentInfo(**payload, chunks=1)
+                else:
+                    document.chunks += 1
+            if offset is None:
+                break
+    except (ResponseHandlingException, UnexpectedResponse, httpx.HTTPError, OSError) as exc:
+        raise VectorDbUnavailable(str(exc)) from exc
+
+    by_id = sorted(documents.values(), key=lambda document: document.doc_id)
+    return sorted(by_id, key=lambda document: document.issued_date, reverse=True)
 
 
 def make_snippet(text: str, limit: int = SNIPPET_MAX_CHARS) -> str:

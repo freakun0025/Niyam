@@ -17,7 +17,7 @@ from app.models.schemas import ErrorResponse
 from app.rag.embedder import Embedder
 from app.rag.generator import LLMUnavailable
 from app.rag.retriever import VectorDbUnavailable
-from app.routes import ask, health, search, version
+from app.routes import ask, documents, feedback, health, search, version
 
 REQUEST_ID_HEADER = "X-Request-ID"
 UNLOGGED_PATHS = frozenset({"/healthz", "/readyz"})
@@ -117,6 +117,8 @@ def create_app(
     app.include_router(version.router)
     app.include_router(search.router)
     app.include_router(ask.router)
+    app.include_router(feedback.router)
+    app.include_router(documents.router)
     return app
 
 
