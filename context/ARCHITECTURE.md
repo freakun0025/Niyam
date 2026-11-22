@@ -263,7 +263,7 @@ Compose and point Filebeat at the host IP (about 1 hour of work).
 |---|---|---|---|
 | Unit/integration test fails | Jenkins stage | Build stops | Fix, push |
 | Eval below threshold | Eval gate stage | Build stops, nothing pushed | Inspect `eval/results/<sha>.json` |
-| New pods never Ready | `rollout status --timeout=180s` in `deploy.yml` | Deploy fails → `post{failure}` → `rollback.yml` | `make rollback` |
+| New pods never Ready | `rollout status --timeout=420s` in `deploy.yml` | Deploy fails → `post{failure}` → `rollback.yml` | `make rollback` |
 | Live verify fails | Verify stage | `rollback.yml` | `make rollback` |
 | Ollama down | `/healthz` detail, `llm.error` logs | `/ask` returns 503 with a clear message; `/search` keeps working | `systemctl restart ollama` |
 | Vault pod restarted (dev mode lost data) | New pods stuck in Init | none | `make vault-reseed` (runs vault role) |

@@ -26,7 +26,8 @@ jenkins_home: /var/lib/jenkins
 # Application
 app_log_level: INFO
 app_prompt_version: v1
-rollout_timeout_seconds: 180
+# The first pull of the api image, which contains the embedding model, can take minutes.
+rollout_timeout_seconds: 420
 
 # Model server and vector database
 ollama_model: qwen2.5:3b
