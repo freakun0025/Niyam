@@ -89,7 +89,7 @@ def test_version_reports_deployed_release(client: TestClient) -> None:
     assert body["app_version"] == "a1b2c3d"
     assert body["prompt_version"] == "v7"
     assert body["embed_model"] == "BAAI/bge-small-en-v1.5"
-    assert body["llm_model"] == "qwen2.5:1.5b-instruct"
+    assert body["llm_model"] == "qwen2.5:3b"
     assert body["collection"] == "circulars_v1"
 
 

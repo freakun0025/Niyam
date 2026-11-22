@@ -21,7 +21,7 @@
 
 ## The 5 flows in one line each
 1. **Code → prod:** push → webhook → Jenkinsfile → tests → eval → scan → Docker Hub → Ansible roles → K8s rolling update.
-2. **Request:** browser → ingress → api → embed (in pod) → Qdrant top-4 → low score? refuse : Ollama → answer + citations.
+2. **Request:** browser → ingress → api → embed (in pod) → Qdrant top-6 → low score? refuse : Ollama → answer + citations.
 3. **Logs:** JSON stdout → Filebeat → Logstash (`json` filter, target `app`) → ES `niyam-app-*` → Kibana.
 4. **Secrets:** ansible-vault (bootstrap) → Vault KV → K8s auth → Agent Injector → file in pod. No app secret lives in a K8s Secret.
 5. **Scale / patch:** HPA on CPU 60% (min 2, max 4); RollingUpdate maxUnavailable 0 + readiness + preStop ⇒ zero downtime.
@@ -37,7 +37,7 @@
 | Embeddings inside the api pod | Makes CPU-based HPA meaningful |
 | HPA demo on `/search`, not `/ask` | `/ask` is bound by the single host LLM; more pods won't help |
 | Readiness ignores Ollama | One external hiccup must not take all pods out |
-| Refuse below score 0.35, no LLM call | Cheap, deterministic, reduces hallucination |
+| Refuse below score 0.68, no LLM call | Cheap, deterministic, reduces hallucination; uncited LLM answers are refused too |
 | Deterministic eval metrics, not LLM-judge | Fast and stable enough to gate CI |
 | `replicas` omitted when HPA exists | Stops Ansible and the HPA fighting over replica count |
 | `index.html` no-cache + `?v=SHA` assets | "Refresh shows the change" (spec item 2) |

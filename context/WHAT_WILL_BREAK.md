@@ -36,7 +36,7 @@ Read before planning each phase. Each item: **symptom → cause → prevention �
 | B10 | Replica count jumps back to 2 after every deploy | `replicas:` in the Deployment fights the HPA | Omit `replicas` (AGENTS §5) | — |
 | B11 | Ansible template error `'Data' is undefined` | Vault Go templates `{{ … }}` parsed by Jinja | `{% raw %}…{% endraw %}` | — |
 | B12 | New pods stuck `Init:0/1` | Vault dev mode lost data after a restart; K8s auth role or policy missing | `make vault-reseed`; `deploy.yml` always runs the `vault` role first (fast, idempotent) | — |
-| B13 | 504 Gateway Timeout on `/ask` | nginx ingress default 60s timeout vs CPU LLM | `proxy-read-timeout: "120"`; `num_predict: 256`; model ≤ 1.5B | Show `/search` + a cached answer |
+| B13 | 504 Gateway Timeout on `/ask` | nginx ingress default 60s timeout vs CPU LLM | `proxy-read-timeout: "120"`; `num_predict: 256`; model ≤ 3B | Show `/search` + a cached answer |
 | B14 | Eval gate takes 15+ minutes | Running every golden question through a CPU LLM | All questions retrieval-only; generation subset of 8; `OLLAMA_KEEP_ALIVE=30m` so the model stays loaded | Reduce the subset to 5 |
 | B15 | Flaky eval → random red builds | LLM non-determinism | `temperature 0.1`, `seed 42`; gate on retrieval metrics + citation presence + refusal (deterministic); keyword recall threshold with margin | Re-run build once; if flaky twice, fix the question |
 | B16 | Webhook works at home, not on campus | Relay blocked / changed URL (ngrok free URL changes on restart) | smee.io stable channel URL, or ngrok reserved domain; Poll SCM fallback always configured | "Build Now" + explain |

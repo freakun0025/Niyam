@@ -79,7 +79,7 @@ class Filters(BaseModel):
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=500)
-    top_k: int = Field(4, ge=1, le=8)
+    top_k: int = Field(6, ge=1, le=8)
     filters: Filters | None = None
 
 class Citation(BaseModel):
@@ -97,12 +97,12 @@ class AskResponse(BaseModel):
     answer: str
     citations: list[Citation]
     refused: bool
-    model: str | None            # e.g. qwen2.5:1.5b-instruct; None when refused
+    model: str | None            # e.g. qwen2.5:3b; None when refused
     prompt_version: str          # e.g. v1
     app_version: str             # git short SHA
     latency_ms: Latency
 
-class SearchRequest(BaseModel):  # same fields as AskRequest
+class SearchRequest(BaseModel):  # same fields as AskRequest, but top_k defaults to 4
     ...
 class SearchResponse(BaseModel):
     request_id: str; hits: list[Citation]; app_version: str; latency_ms: Latency
@@ -225,14 +225,16 @@ Kubernetes auth roles: `niyam-api` → `bound_service_account_names=niyam-api`, 
 | `NIYAM_QDRANT_API_KEY_FILE` | `/vault/secrets/qdrant` | `NIYAM_QDRANT_API_KEY` is accepted for local dev only |
 | `NIYAM_QDRANT_COLLECTION` | `circulars_v1` | |
 | `NIYAM_OLLAMA_URL` | `http://ollama.niyam.svc:11434` | |
-| `NIYAM_LLM_MODEL` | `qwen2.5:1.5b-instruct` | |
+| `NIYAM_LLM_MODEL` | `qwen2.5:3b` | The 1.5B model produced too many wrong cited answers |
 | `NIYAM_LLM_TIMEOUT_S` | `60` | |
 | `NIYAM_LLM_MAX_TOKENS` | `256` | `num_predict` |
 | `NIYAM_LLM_TEMPERATURE` | `0.1` | seed fixed at 42 |
 | `NIYAM_EMBED_MODEL` | `BAAI/bge-small-en-v1.5` | |
 | `NIYAM_EMBED_CACHE` | `/models` | Baked in the image |
 | `NIYAM_PROMPT_VERSION` | `v1` | File `app/rag/prompts/v1.txt` |
-| `NIYAM_REFUSAL_THRESHOLD` | `0.35` | Tune once on the golden set, then freeze |
+| `NIYAM_REFUSAL_THRESHOLD` | `0.68` | Tuned for bge-small scores; confirm on the golden set, then freeze |
+| `NIYAM_EMBED_OFFLINE` | `false` | `true` in the image, which contains the model |
+| `NIYAM_EMBED_THREADS` | `1` | Matches the pod's 1 CPU limit |
 | `NIYAM_CORPUS_MANIFEST` | `/data/corpus/manifest.yaml` | Ingest only |
 | `NIYAM_LOG_LEVEL` | `INFO` | |
 

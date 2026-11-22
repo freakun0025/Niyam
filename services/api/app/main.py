@@ -15,8 +15,9 @@ from app.deps import build_qdrant_client, build_readiness_checks
 from app.logging import configure_logging, log_event
 from app.models.schemas import ErrorResponse
 from app.rag.embedder import Embedder
+from app.rag.generator import LLMUnavailable
 from app.rag.retriever import VectorDbUnavailable
-from app.routes import health, search, version
+from app.routes import ask, health, search, version
 
 REQUEST_ID_HEADER = "X-Request-ID"
 UNLOGGED_PATHS = frozenset({"/healthz", "/readyz"})
@@ -88,6 +89,16 @@ async def handle_vector_db_unavailable(request: Request, exc: VectorDbUnavailabl
     )
 
 
+async def handle_llm_unavailable(request: Request, exc: LLMUnavailable) -> JSONResponse:
+    request.state.log_fields["error_type"] = f"llm_{exc}"
+    return _error_response(
+        request,
+        503,
+        "llm_unavailable",
+        "The answer service is temporarily unavailable. Source search still works.",
+    )
+
+
 def create_app(
     settings: Settings | None = None, embedder: Any = None, qdrant: Any = None
 ) -> FastAPI:
@@ -101,9 +112,11 @@ def create_app(
     app.middleware("http")(request_context)
     app.add_exception_handler(RequestValidationError, handle_validation_error)
     app.add_exception_handler(VectorDbUnavailable, handle_vector_db_unavailable)
+    app.add_exception_handler(LLMUnavailable, handle_llm_unavailable)
     app.include_router(health.router)
     app.include_router(version.router)
     app.include_router(search.router)
+    app.include_router(ask.router)
     return app
 
 

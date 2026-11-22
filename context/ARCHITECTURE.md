@@ -33,7 +33,7 @@ flowchart LR
 │  WINDOWS: Jenkins controller (service, :8080)                                           │
 │  UBUNTU WSL2 (systemd)                                                                  │
 │   • Jenkins agent (niyam-wsl) ── runs docker, trivy, ansible, kubectl                   │
-│   • Ollama (native, OLLAMA_HOST=0.0.0.0:11434)  model: qwen2.5:1.5b-instruct            │
+│   • Ollama (native, OLLAMA_HOST=0.0.0.0:11434)  model: qwen2.5:3b                       │
 │   • smee/ngrok relay  → exposes Jenkins /github-webhook/                                │
 │   • Docker Compose only for local dev + the CI eval-gate environment                    │
 │                                                                                         │
@@ -109,15 +109,15 @@ sequenceDiagram
   B->>I: POST /api/v1/ask {question}
   I->>A: proxy (read timeout 120s)
   A->>A: request_id, validate, embed query (in-process, CPU)
-  A->>Q: search top_k=4 (+filters), api-key from /vault/secrets/qdrant
+  A->>Q: search top_k=6 (+filters), api-key from /vault/secrets/qdrant
   Q-->>A: chunks + scores
-  alt top_score < REFUSAL_THRESHOLD (0.35)
+  alt top_score < REFUSAL_THRESHOLD (0.68)
     A-->>B: refused=true, fixed message (no LLM call)
   else
     A->>A: build prompt from prompts/v{N}.txt + numbered context
     A->>O: /api/chat (num_predict 256, temperature 0.1, timeout 60s)
     O-->>A: answer text
-    A->>A: verify cited [n] exist, attach citations
+    A->>A: verify cited [n] exist; NOT_FOUND or no valid citation becomes a refusal
     A-->>B: answer, citations, latency_ms, app_version, prompt_version
   end
   A-->>A: log request.completed (stdout JSON)
@@ -232,9 +232,9 @@ what its pods use. (VirtualBox/KVM drivers pre-allocate the full amount, so don'
 | Kibana | 768Mi / 1.2Gi | ~0.8 GB |
 | **Minikube subtotal** | cap 9 GB | **≈ 6.3–7.5 GB** |
 | Jenkins (host) | | ~0.8 GB |
-| Ollama + qwen2.5:1.5b-instruct q4 (host) | | ~1.8 GB |
+| Ollama + qwen2.5:3b (host) | | ~2.1 GB |
 | OS + browser + IDE | | ~3 GB |
-| **Total** | | **≈ 12–13 GB**: fits, with headroom. Close the IDE during the demo. |
+| **Total** | | **≈ 12.5–13.5 GB**: fits, with limited headroom. Close the IDE during the demo. |
 
 Lite mode (≤12 GB laptop): `ollama_model: qwen2.5:0.5b-instruct`, ES heap 768m, Logstash heap 384m, HPA max 3.
 Emergency fallback (not maintained unless needed): run the same three Elastic images on the host with Docker

@@ -77,3 +77,18 @@ class SearchResponse(BaseModel):
     hits: list[Citation]
     app_version: str
     latency_ms: Latency
+
+
+class AskRequest(SearchRequest):
+    top_k: int = Field(6, ge=1, le=8)  # More context measurably improves generated answers.
+
+
+class AskResponse(BaseModel):
+    request_id: str
+    answer: str
+    citations: list[Citation]
+    refused: bool
+    model: str | None
+    prompt_version: str
+    app_version: str
+    latency_ms: Latency
