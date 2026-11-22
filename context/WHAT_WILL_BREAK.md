@@ -64,6 +64,7 @@ Read before planning each phase. Each item: **symptom → cause → prevention �
 | B38 | `scripts/*.sh: Permission denied` in Jenkins | Windows git has `core.filemode=false`, so the executable bit is not recorded | Stage scripts with `git add --chmod=+x`; call them through `bash` | `git ls-files -s scripts/` shows `100755` |
 | B39 | `minikube start` fails with `K8S_UNHEALTHY_CONTROL_PLANE` after a WSL restart; Jenkins can't reach the cluster | The API server's published port changes on restart | `make cluster-up` retries once and refreshes the Jenkins kubeconfig | Run `minikube start -p niyam` again |
 | B40 | `niyam.local` resolves in Windows but not in Ubuntu | WSL does not copy the loopback entry from the Windows hosts file | Scripts use `curl --resolve niyam.local:80:127.0.0.1` | `curl -H 'Host: niyam.local' http://127.0.0.1/` |
+| B41 | Build waits forever for `niyam-wsl` | The Ubuntu agent is offline because WSL stopped or the Windows Jenkins restarted | Agent runs as a restarting user service; check it before the demo | `systemctl --user restart niyam-jenkins-agent` |
 
 ## C. Over-engineering: what we deliberately do **not** build
 

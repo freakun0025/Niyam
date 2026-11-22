@@ -723,7 +723,7 @@ apply Logstash, Kibana, Ingress, Filebeat → wait for Kibana → import `infra/
 
 ## 10. Bootstrap order (first time on the demo laptop)
 
-1. Install prerequisites: Docker, minikube, kubectl, helm, ansible (+ `ansible-galaxy collection install -r ansible/requirements.yml`), Jenkins LTS (apt), Ollama, trivy, hey, smee-client or ngrok.
+1. Install prerequisites: Docker, minikube, kubectl, helm, ansible (+ `ansible-galaxy collection install -r ansible/requirements.yml`), Jenkins (Windows service) with the Ubuntu agent from `make agent-install`, Ollama, trivy, hey, smee-client or ngrok.
 2. `ansible-vault create ansible/group_vars/all/vault.yml` → fill the seeds.
 3. `make bootstrap` → common → minikube (profile `niyam`, `--driver=docker --cpus=4 --memory=9g --disk-size=40g --ports=127.0.0.1:80:80`, embed-certs) → ollama → vault → elk → qdrant → app (first tag pushed manually) → ingest. Vault must be up before `elk`, because ELK pods get their passwords from the injector.
 4. Jenkins: install plugins (Git, GitHub, Pipeline, Credentials Binding, Docker Pipeline optional); add the 2 credentials; create a Pipeline job "from SCM" with the GitHub hook trigger + Poll SCM `H/2 * * * *` fallback.

@@ -1,7 +1,7 @@
 // Niyam release pipeline.
 // Every sh step uses single quotes so the shell, not Groovy, expands secrets.
 pipeline {
-  agent any
+  agent { label 'niyam-wsl' } // Ubuntu agent with Docker, Ansible and cluster access.
 
   triggers {
     githubPush()

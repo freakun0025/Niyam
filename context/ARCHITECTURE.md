@@ -30,8 +30,9 @@ flowchart LR
 
 ```
 ┌─────────────────────── Laptop (Windows 11 + Ubuntu WSL2, 16 GB) ────────────────────────┐
+│  WINDOWS: Jenkins controller (service, :8080)                                           │
 │  UBUNTU WSL2 (systemd)                                                                  │
-│   • Jenkins (native, :8080)  ── runs docker, trivy, ansible, kubectl                    │
+│   • Jenkins agent (niyam-wsl) ── runs docker, trivy, ansible, kubectl                   │
 │   • Ollama (native, OLLAMA_HOST=0.0.0.0:11434)  model: qwen2.5:1.5b-instruct            │
 │   • smee/ngrok relay  → exposes Jenkins /github-webhook/                                │
 │   • Docker Compose only for local dev + the CI eval-gate environment                    │
@@ -68,15 +69,16 @@ the CI server and the model server are external dependencies, as they would be i
 
 ### 3.1 Demo platform: Windows 11 + Ubuntu 24.04 on WSL2
 
-"Host" in this document means the **Ubuntu WSL2 distribution**. Docker Desktop provides the Docker engine through WSL integration.
+"Host" in this document means the **Ubuntu WSL2 distribution**, except for the Jenkins controller, which is a Windows service. Docker Desktop provides the Docker engine through WSL integration.
 
 | Concern | Setting |
 |---|---|
+| Jenkins | The Windows controller schedules builds on Ubuntu agent `niyam-wsl`, which runs as the developer account and connects over WebSocket (`make agent-install`) |
 | WSL limits | `%USERPROFILE%\.wslconfig`: `memory=12GB`, `swap=8GB`, `processors=8` |
 | Cluster | `minikube start -p niyam --driver=docker --kubernetes-version=v1.32.2 --cpus=4 --memory=9g --disk-size=40g --embed-certs --ports=127.0.0.1:80:80` |
 | Browser access | Windows hosts file: `127.0.0.1 niyam.local kibana.niyam.local`. The ingress controller is published on `127.0.0.1:80` |
 | Access from Ubuntu | WSL does not copy that hosts entry, so scripts use `curl --resolve niyam.local:80:127.0.0.1` |
-| After a WSL restart | The API server's host port changes, and the first `minikube start` can fail while the cluster is healthy. `make cluster-up` retries once and refreshes the Jenkins kubeconfig |
+| After a WSL restart | The API server's host port changes, and the first `minikube start` can fail while the cluster is healthy. `make cluster-up` retries once and updates the kubeconfig the agent uses |
 
 ## 4. Components
 

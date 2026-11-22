@@ -38,7 +38,8 @@ make down           # stop the Compose stack
 make test           # lint + unit tests inside Docker (same as CI)
 make test-local     # unit tests in a managed local virtual environment
 make lint           # ruff check + ruff format --check
-make cluster-up     # start minikube and refresh the Jenkins kubeconfig
+make cluster-up     # start minikube and update the kubeconfig
+make agent-install  # install and start the Ubuntu Jenkins agent service
 make bootstrap TAG=<sha>  # ansible-playbook ansible/playbooks/site.yml
 make deploy TAG=<sha>     # ansible-playbook ansible/playbooks/deploy.yml -e image_tag=<sha>
 # Added by later milestones:
