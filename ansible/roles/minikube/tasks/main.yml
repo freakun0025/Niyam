@@ -1,0 +1,106 @@
+---
+- name: Read cluster status
+  ansible.builtin.command:
+    argv: [minikube, status, "--profile={{ minikube_profile }}", --output=json]
+  register: minikube_status
+  changed_when: false
+  failed_when: false
+
+- name: Decide whether the cluster is running
+  ansible.builtin.set_fact:
+    minikube_running: >-
+      {{ minikube_status.stdout is search('"Host":\s*"Running"')
+         and minikube_status.stdout is search('"APIServer":\s*"Running"') }}
+
+# The first start after a WSL restart can fail while the API port changes (WHAT_WILL_BREAK B39).
+- name: Start the cluster
+  ansible.builtin.command:
+    argv:
+      - minikube
+      - start
+      - "--profile={{ minikube_profile }}"
+      - "--driver={{ minikube_driver }}"
+      - "--kubernetes-version={{ minikube_kubernetes_version }}"
+      - "--cpus={{ minikube_cpus }}"
+      - "--memory={{ minikube_memory }}"
+      - "--disk-size={{ minikube_disk_size }}"
+      - "--ports={{ minikube_ingress_publish }}"
+      - "--wait-timeout={{ minikube_start_wait_timeout }}"
+      - --embed-certs
+  register: minikube_start
+  until: minikube_start.rc == 0
+  retries: 1
+  delay: 5
+  when: not (minikube_running | bool)
+
+- name: Point kubeconfig at the current API port
+  ansible.builtin.command:
+    argv: [minikube, update-context, "--profile={{ minikube_profile }}"]
+  register: minikube_context
+  changed_when: "'has been updated' in minikube_context.stdout"
+
+- name: List addons
+  ansible.builtin.command:
+    argv: [minikube, addons, list, "--profile={{ minikube_profile }}", --output=json]
+  register: minikube_addon_list
+  changed_when: false
+
+- name: Enable required addons
+  ansible.builtin.command:
+    argv: [minikube, addons, enable, "{{ item }}", "--profile={{ minikube_profile }}"]
+  loop: "{{ minikube_addons }}"
+  when: (minikube_addon_list.stdout | from_json)[item].Status != 'enabled'
+
+- name: Wait for the ingress controller
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - "--context={{ minikube_profile }}"
+      - --namespace=ingress-nginx
+      - rollout
+      - status
+      - deployment/ingress-nginx-controller
+      - "--timeout={{ minikube_ingress_wait_timeout }}"
+  changed_when: false
+
+- name: Check whether Jenkins is installed
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ jenkins_user }}"
+    fail_key: false
+
+- name: Refresh the Jenkins kubeconfig
+  when: ansible_facts.getent_passwd[jenkins_user] | default(none) is not none
+  block:
+    - name: Export the cluster kubeconfig
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - config
+          - view
+          - --raw
+          - --flatten
+          - --minify
+          - "--context={{ minikube_profile }}"
+      register: minikube_kubeconfig
+      changed_when: false
+      no_log: true
+
+    - name: Create the Jenkins kube directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ jenkins_home }}/.kube"
+        state: directory
+        owner: "{{ jenkins_user }}"
+        group: "{{ jenkins_user }}"
+        mode: "0700"
+
+    - name: Install the Jenkins kubeconfig
+      become: true
+      ansible.builtin.copy:
+        content: "{{ minikube_kubeconfig.stdout }}\n"
+        dest: "{{ jenkins_home }}/.kube/config"
+        owner: "{{ jenkins_user }}"
+        group: "{{ jenkins_user }}"
+        mode: "0600"
+      no_log: true

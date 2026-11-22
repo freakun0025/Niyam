@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: niyam-config
+  namespace: {{ niyam_ns }}
+  labels:
+    app.kubernetes.io/part-of: niyam
+data:
+  NIYAM_LOG_LEVEL: "{{ app_log_level }}"
+  NIYAM_PROMPT_VERSION: "{{ app_prompt_version }}"

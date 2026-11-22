@@ -1,0 +1,19 @@
+---
+common_packages:
+  - curl
+  - jq
+  - python3-venv
+
+# Shared so the jenkins user runs the same Ansible version as the team.
+common_ansible_venv: /opt/niyam-ansible
+common_ansible_packages:
+  - ansible==11.7.0
+  - kubernetes==31.0.0
+  - jsonpatch==1.33
+common_ansible_tools:
+  - ansible
+  - ansible-config
+  - ansible-galaxy
+  - ansible-inventory
+  - ansible-playbook
+  - ansible-vault

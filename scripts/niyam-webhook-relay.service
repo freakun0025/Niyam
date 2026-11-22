@@ -1,0 +1,15 @@
+[Unit]
+Description=Niyam GitHub webhook tunnel (ngrok)
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/bin/niyam-webhook-relay
+Restart=always
+RestartSec=10
+# Exit code 2 means local setup is missing, so retrying cannot help.
+RestartPreventExitStatus=2
+
+[Install]
+WantedBy=default.target

@@ -111,7 +111,7 @@ listed in `data/corpus/manifest.yaml`. A 3-document fixture corpus (`data/fixtur
 |---|---|
 | Latency (demo laptop, CPU LLM) | `/search` p95 < 1 s; `/ask` p95 < 20 s (generation capped at 256 tokens). |
 | Availability during deploy | 0 failed requests in the zero-downtime check. |
-| Resources | Whole stack runs on **one 16 GB RAM, 4+ core laptop**, Ubuntu 22.04/24.04 recommended. Budget in ARCHITECTURE §11. |
+| Resources | Whole stack runs on **one 16 GB RAM, 4+ core laptop**. Demo machine: Windows 11 + Ubuntu 24.04 on WSL2 (ARCHITECTURE §3.1). Budget in ARCHITECTURE §11. |
 | Security | No plaintext secrets in git or K8s Secrets for app credentials; containers run as non-root; Trivy blocks CRITICAL fixable CVEs. |
 | Observability | Every request has a `request_id`; every log line carries `app_version`; logs are searchable in Kibana within 10 s. |
 | Reproducibility | `make bootstrap` on a clean machine (with prerequisites installed) brings up everything; a README lists the prerequisites. |

@@ -1,0 +1,3 @@
+---
+minikube_start_wait_timeout: 4m
+minikube_ingress_wait_timeout: 300s

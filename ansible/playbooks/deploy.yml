@@ -1,0 +1,19 @@
+---
+# The only deploy path for people and Jenkins. It must not need sudo.
+- name: Release one image tag
+  hosts: local
+  gather_facts: false
+  vars_files:
+    - ../group_vars/all/main.yml
+    - ../group_vars/all/vault.yml
+  roles:
+    # ── Extension point: Teammate 2 (P4) ──────────────────────────────
+    # Dev-mode Vault loses data on restart, so reseed it before each release.
+    # - { role: vault, tags: [vault] }
+
+    - { role: app, tags: [app] }
+
+    # P2 (Teammate 1):
+    # - role: ingest
+    #   tags: [ingest]
+    #   when: (corpus_changed | default('false') | bool) or (force_ingest | default(false) | bool)

@@ -316,7 +316,7 @@ niyam/
 │   │   └── teardown.yml              # delete namespaces niyam + logging (keeps PVCs unless purge=true)
 │   └── roles/
 │       ├── common/    tasks: apt pkgs (python3-kubernetes, jq, hey), docker group for jenkins, kubeconfig for jenkins, sysctl
-│       ├── minikube/  tasks: start (cpus, memory, embed-certs), addons ingress+metrics-server, /etc/hosts niyam.local
+│       ├── minikube/  tasks: start (cpus, memory, embed-certs), addons ingress+metrics-server, Jenkins kubeconfig sync
 │       ├── ollama/    tasks: systemd override OLLAMA_HOST, pull model, discover host IP; templates: ollama-svc, ollama-endpointslice
 │       ├── elk/       tasks: apply ns logging, wait ES ready, set kibana_system pw, create logstash_writer role+user, index template, import dashboards
 │       │              templates: es-statefulset, es-service, logstash-configmap, logstash-deployment, logstash-service,
@@ -385,7 +385,7 @@ COPY data/corpus /data/corpus
 COPY data/fixtures /data/fixtures
 USER 10001
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log", "--timeout-graceful-shutdown", "25"]
+CMD ["uvicorn", "app.main:build_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--no-access-log", "--timeout-graceful-shutdown", "25"]
 ```
 
 ### 9.2 `docker-compose.yml` (dev)
@@ -723,9 +723,9 @@ apply Logstash, Kibana, Ingress, Filebeat → wait for Kibana → import `infra/
 
 ## 10. Bootstrap order (first time on the demo laptop)
 
-1. Install prerequisites: Docker, minikube, kubectl, helm, ansible (+ `ansible-galaxy collection install -r ansible/requirements.yml`), Jenkins LTS (apt), Ollama, trivy, hey, smee-client or ngrok.
+1. Install prerequisites: Docker, minikube, kubectl, helm, ansible (+ `ansible-galaxy collection install -r ansible/requirements.yml`), Jenkins (Windows service) with the Ubuntu agent from `make agent-install`, Ollama, trivy, hey, smee-client or ngrok.
 2. `ansible-vault create ansible/group_vars/all/vault.yml` → fill the seeds.
-3. `make bootstrap` → common → minikube (`--driver=docker --cpus=4 --memory=10g --disk-size=40g`, embed-certs) → ollama → vault → elk → qdrant → app (first tag pushed manually) → ingest. Vault must be up before `elk`, because ELK pods get their passwords from the injector.
+3. `make bootstrap` → common → minikube (profile `niyam`, `--driver=docker --cpus=4 --memory=9g --disk-size=40g --ports=127.0.0.1:80:80`, embed-certs) → ollama → vault → elk → qdrant → app (first tag pushed manually) → ingest. Vault must be up before `elk`, because ELK pods get their passwords from the injector.
 4. Jenkins: install plugins (Git, GitHub, Pipeline, Credentials Binding, Docker Pipeline optional); add the 2 credentials; create a Pipeline job "from SCM" with the GitHub hook trigger + Poll SCM `H/2 * * * *` fallback.
 5. GitHub → Settings → Webhooks → `https://<smee-or-ngrok>/github-webhook/`, content type `application/json`, push events.
 6. Build Kibana dashboard panels (ARCH §7) → export → commit `infra/kibana/dashboards.ndjson`.

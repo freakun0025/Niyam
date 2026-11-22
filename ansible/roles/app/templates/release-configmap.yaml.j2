@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: niyam-release
+  namespace: {{ niyam_ns }}
+  labels:
+    app.kubernetes.io/part-of: niyam
+data:
+  current_tag: "{{ image_tag }}"
+  deployed_at: "{{ app_deployed_at }}"

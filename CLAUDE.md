@@ -31,7 +31,7 @@ These rules apply to whichever teammate is at the keyboard. **The human makes ev
 
    **Commit:**
    ```powershell
-   git commit -m "<type>(<scope>): <imperative summary, ≤ 72 chars>" -m "<body: WHY this change, any trade-off. Refs: <PRD IDs>>"
+   git commit -m "<type>(<scope>): <imperative summary, ≤ 72 chars>" -m "<body: WHY this change, any trade-off>"
    ```
 
    ```diff
@@ -41,9 +41,9 @@ These rules apply to whichever teammate is at the keyboard. **The human makes ev
 3. **After "done",** run `git log --oneline -3` and `git status --short` to confirm the commit landed and nothing from that unit was left unstaged. Then continue.
 4. **What a good commit looks like:**
    - One logical change per commit, ideally 20–300 changed lines. Split bigger units into several checkpoints, and never let more than about an hour of work pile up without one.
-   - Conventional Commits. Types: `feat`, `fix`, `test`, `refactor`, `docs`, `build`, `ci`, `chore`, `perf`. Scopes: `api`, `web`, `ingest`, `rag`, `eval`, `ansible`, `k8s`, `vault`, `elk`, `jenkins`, `docker`, `scripts`, `docs`, `claude`.
+   - Conventional Commits. Types: `feat`, `fix`, `test`, `refactor`, `docs`, `build`, `ci`, `chore`, `perf`. Scopes: `api`, `web`, `ingest`, `rag`, `eval`, `ansible`, `k8s`, `vault`, `elk`, `jenkins`, `docker`, `scripts`, `docs`.
    - Never mix app code and infra in one commit. Tests go in the same commit as the code they test, or in an immediately following `test(...)` commit.
-   - Commit messages never say "wip", "update files" or "fix stuff", and never include Co-Authored-By or any AI/tool attribution lines.
+   - Commit messages never say "wip", "update files" or "fix stuff", and never include Co-Authored-By, AI/tool attribution lines, or the name of any AI tool, in the subject, scope or body. They also omit `Refs:` lines; PRD IDs belong in the checkpoint banner only.
    - A bug fix gets its own `fix(...)` commit that explains the root cause in the body.
 5. **Branching:** one branch per milestone and owner, such as `feat/p1-walking-skeleton` or `feat/p3-elk`. Changes reach `main` only through a GitHub PR merged with a **merge commit** (not squash), reviewed by the other teammate when possible. Give the human the exact commands to create and push a branch, open the PR, merge, and tag (`git tag -a vX.Y.Z -m "..."`, then `git push origin vX.Y.Z`). The human runs them. Before each new branch, tell the human to update main first (`git switch main`, then `git pull`).
 6. **Never run sudo, install system packages, or create accounts or tokens.** For anything on the human's machine that needs those (Docker, minikube, Jenkins, Ollama, Docker Hub tokens, GitHub webhook, smee/ngrok), give numbered steps and how to check that each one worked.

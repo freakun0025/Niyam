@@ -1,0 +1,8 @@
+---
+# Variable names for the encrypted ansible/group_vars/all/vault.yml.
+# This example holds no real values and is never loaded by a playbook.
+vault_dev_root_token: CHANGE_ME
+vault_seed_qdrant_api_key: CHANGE_ME
+vault_seed_elastic_password: CHANGE_ME
+vault_seed_logstash_writer_password: CHANGE_ME
+vault_seed_kibana_system_password: CHANGE_ME
