@@ -19,4 +19,4 @@
 
     - { role: qdrant, tags: [qdrant] }
     - { role: app, tags: [app] }
-    # P2 (Teammate 1): - { role: ingest, tags: [ingest] }
+    - { role: ingest, tags: [ingest] }

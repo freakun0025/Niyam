@@ -448,8 +448,6 @@ pipeline {
   stages {
     stage('Init') { steps { script {
       env.IMAGE_TAG = sh(returnStdout: true, script: 'git rev-parse --short=7 HEAD').trim()
-      env.CORPUS_CHANGED = sh(returnStatus: true,
-        script: 'git diff --quiet ${GIT_PREVIOUS_SUCCESSFUL_COMMIT:-HEAD~1} HEAD -- data/corpus') == 0 ? 'false' : 'true'
     } } }
     stage('Unit tests') { steps { sh 'docker build -f services/api/Dockerfile --target test -t niyam-api-test:${IMAGE_TAG} .' } }
     stage('Build images') { steps {
@@ -471,7 +469,7 @@ pipeline {
       withCredentials([string(credentialsId: 'ansible-vault-pass', variable: 'ANSIBLE_VAULT_PASS')]) {
         script { env.DEPLOYED = 'true' }
         sh '''ansible-playbook -i $INV ansible/playbooks/deploy.yml \
-              -e image_tag=$IMAGE_TAG -e dockerhub_ns=$DOCKERHUB_NS -e corpus_changed=$CORPUS_CHANGED \
+              -e image_tag=$IMAGE_TAG -e dockerhub_ns=$DOCKERHUB_NS \
               --vault-password-file ansible/scripts/vault-pass.sh'''
       }
     } }
@@ -514,9 +512,10 @@ All `sh` steps use single quotes, so the shell (not Groovy) expands variables an
     image_tag: "{{ image_tag | mandatory }}"
   roles:
     - vault                                   # idempotent reseed (dev-mode Vault)
+    - ollama
+    - qdrant
     - app
-    - role: ingest
-      when: (corpus_changed | default('false') | bool) or (force_ingest | default(false) | bool)
+    - ingest                                  # skips unchanged documents
 
 # ansible/playbooks/rollback.yml
 - name: Roll back to last good tag

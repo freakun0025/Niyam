@@ -146,7 +146,7 @@ flowchart TD
 Notes
 - **Tests run inside Docker** (`test` stage of the multi-stage Dockerfile), so the Jenkins host needs no Python toolchain.
 - **Eval gate environment** (`docker-compose.ci.yml`): the freshly built `niyam-api:<sha>` + an ephemeral Qdrant + host Ollama. Fixture corpus of 3 docs. All golden questions run in retrieval mode; an 8-question subset runs with generation (CPU LLM time budget about 3 min).
-- **Ingest on corpus change only:** `deploy.yml` runs the `ingest` role when `data/corpus/manifest.yaml` changed since the last deployed SHA (or with `-e force_ingest=true`). Job name `niyam-ingest-<sha8>` makes each run unique.
+- **Ingest on every release:** `deploy.yml` runs the `ingest` Job, which skips unchanged documents and restores the index if Qdrant lost its data. `-e force_ingest=true` replaces an existing Job for the same release. Job name `niyam-ingest-<sha8>` makes each release's run unique.
 - **Concurrency:** `disableConcurrentBuilds()`. Two pushes in quick succession queue; they never deploy in parallel.
 
 ## 7. Logging flow (ELK)

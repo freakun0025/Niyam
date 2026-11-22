@@ -16,7 +16,5 @@
     - { role: qdrant, tags: [qdrant] }
     - { role: app, tags: [app] }
 
-    # P2 (Teammate 1):
-    # - role: ingest
-    #   tags: [ingest]
-    #   when: (corpus_changed | default('false') | bool) or (force_ingest | default(false) | bool)
+    # Unchanged documents are skipped, so this is safe on every release.
+    - { role: ingest, tags: [ingest] }
