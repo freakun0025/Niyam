@@ -1,0 +1,15 @@
+[Unit]
+Description=Niyam Jenkins agent
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/bin/niyam-jenkins-agent
+Restart=always
+RestartSec=10
+# Exit code 2 means the secret is missing, so retrying cannot help.
+RestartPreventExitStatus=2
+
+[Install]
+WantedBy=default.target

@@ -13,7 +13,7 @@ PLAYBOOK := ansible-playbook -i ansible/inventory/hosts.ini
 VAULT_PASS_FILE ?= $(HOME)/.niyam-vault-pass
 VAULT_FLAGS ?= $(if $(wildcard $(VAULT_PASS_FILE)),--vault-password-file "$(VAULT_PASS_FILE)",--ask-vault-pass)
 
-.PHONY: help dev down test test-local lint bootstrap cluster-up deploy check-tag
+.PHONY: help dev down test test-local lint bootstrap cluster-up deploy check-tag agent-install
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -49,3 +49,12 @@ cluster-up: ## Start the cluster and refresh the Jenkins kubeconfig
 
 deploy: check-tag ## Release one image tag: make deploy TAG=<sha>
 	$(PLAYBOOK) ansible/playbooks/deploy.yml -e image_tag=$(TAG) $(VAULT_FLAGS)
+
+agent-install: ## Install and start the Ubuntu Jenkins agent service
+	@test -s "$(HOME)/.niyam-jenkins-agent-secret" || { echo "Save the agent secret to ~/.niyam-jenkins-agent-secret first" >&2; exit 2; }
+	install -D -m 0755 scripts/jenkins-agent.sh "$(HOME)/.local/bin/niyam-jenkins-agent"
+	install -D -m 0644 scripts/niyam-jenkins-agent.service "$(HOME)/.config/systemd/user/niyam-jenkins-agent.service"
+	systemctl --user daemon-reload
+	systemctl --user enable niyam-jenkins-agent.service
+	systemctl --user restart niyam-jenkins-agent.service
+	loginctl enable-linger "$$(id -un)"
