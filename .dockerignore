@@ -3,6 +3,9 @@
 !services/
 services/*
 !services/api/
+!data/
+data/*
+!data/fixtures/
 
 **/__pycache__
 **/*.py[cod]
