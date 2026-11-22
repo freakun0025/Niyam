@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     embed_model: str = "BAAI/bge-small-en-v1.5"
     embed_cache: Path = Path("/models")
     embed_offline: bool = False  # True in the image, where the model is baked in.
+    embed_threads: int = Field(default=1, ge=1)  # Matches the pod's 1 CPU limit.
     prompt_version: str = "v1"
     refusal_threshold: float = Field(default=0.35, ge=0.0, le=1.0)
     corpus_manifest: Path = Path("/data/corpus/manifest.yaml")

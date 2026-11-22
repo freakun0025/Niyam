@@ -39,6 +39,7 @@ def test_offline_mode_controls_model_loading(offline: bool) -> None:
         "model_name": "model-name",
         "cache_dir": str(Path("/models")),
         "local_files_only": offline,
+        "threads": 1,
     }
 
 

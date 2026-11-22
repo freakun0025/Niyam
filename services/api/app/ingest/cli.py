@@ -142,7 +142,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         client = build_qdrant_client(settings)
         embedder = Embedder(
-            settings.embed_model, settings.embed_cache, offline=settings.embed_offline
+            settings.embed_model,
+            settings.embed_cache,
+            offline=settings.embed_offline,
+            threads=settings.embed_threads,
         )
         summary = run_ingest(args.manifest, client, embedder, settings, force=args.force)
     except ManifestError as exc:

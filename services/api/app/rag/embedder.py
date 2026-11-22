@@ -10,7 +10,9 @@ PASSAGE_BATCH_SIZE = 8
 class Embedder:
     """Wraps the embedding model, using separate modes for passages and queries."""
 
-    def __init__(self, model_name: str, cache_dir: Path, offline: bool = False) -> None:
+    def __init__(
+        self, model_name: str, cache_dir: Path, offline: bool = False, threads: int = 1
+    ) -> None:
         # Imported here because loading the model runtime is slow and unit tests do not need it.
         from fastembed import TextEmbedding
 
@@ -19,6 +21,7 @@ class Embedder:
             model_name=model_name,
             cache_dir=str(cache_dir),
             local_files_only=offline,
+            threads=threads,
         )
 
     def embed_passages(self, texts: Sequence[str]) -> list[list[float]]:

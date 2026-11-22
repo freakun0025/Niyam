@@ -1,5 +1,6 @@
 """Structured JSON logging to stdout (schema: DATA_MODEL section 4)."""
 
+import hashlib
 import json
 import logging
 import os
@@ -12,6 +13,7 @@ from app.config import Settings
 
 SERVICE_NAME = "niyam-api"
 GENERIC_EVENT = "app.log"
+MAX_LOGGED_QUESTION_CHARS = 200
 
 _EVENT_ATTR = "niyam_event"
 _FIELDS_ATTR = "niyam_fields"
@@ -61,6 +63,12 @@ class JsonFormatter(logging.Formatter):
 def log_event(event: str, level: int = logging.INFO, **fields: Any) -> None:
     """Emit a named application event with extra structured fields."""
     logger.log(level, event, extra={_EVENT_ATTR: event, _FIELDS_ATTR: fields})
+
+
+def question_log_fields(question: str) -> dict[str, str]:
+    """Return a shortened question plus a stable hash for grouping repeats."""
+    digest = hashlib.sha256(question.casefold().encode("utf-8")).hexdigest()
+    return {"question": question[:MAX_LOGGED_QUESTION_CHARS], "question_hash": digest[:16]}
 
 
 def configure_logging(settings: Settings) -> None:
