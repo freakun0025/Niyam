@@ -1,5 +1,7 @@
 // Niyam release pipeline.
 // Every sh step uses single quotes so the shell, not Groovy, expands secrets.
+// Every sh step starts with a shebang because the Windows controller's global
+// shell setting points to a Windows path that does not exist on the Ubuntu agent.
 pipeline {
   agent { label 'niyam-wsl' } // Ubuntu agent with Docker, Ansible and cluster access.
 
@@ -25,7 +27,10 @@ pipeline {
     stage('Init') {
       steps {
         script {
-          env.IMAGE_TAG = sh(returnStdout: true, script: 'git rev-parse --short=7 HEAD').trim()
+          env.IMAGE_TAG = sh(
+            returnStdout: true,
+            script: '#!/bin/bash\ngit rev-parse --short=7 HEAD'
+          ).trim()
           currentBuild.displayName = "#${env.BUILD_NUMBER} ${env.IMAGE_TAG}"
         }
       }
@@ -33,7 +38,8 @@ pipeline {
 
     stage('Unit tests') {
       steps {
-        sh '''
+        sh '''#!/bin/bash
+          set -euo pipefail
           docker build -f services/api/Dockerfile --target test -t "niyam-api-test:$IMAGE_TAG" .
         '''
       }
@@ -41,7 +47,8 @@ pipeline {
 
     stage('Build images') {
       steps {
-        sh '''
+        sh '''#!/bin/bash
+          set -euo pipefail
           docker build -f services/api/Dockerfile --target runtime \
             --build-arg "APP_VERSION=$IMAGE_TAG" -t "$DOCKERHUB_NS/niyam-api:$IMAGE_TAG" .
           docker build --build-arg "APP_VERSION=$IMAGE_TAG" \
@@ -60,8 +67,8 @@ pipeline {
           usernameVariable: 'DH_USER',
           passwordVariable: 'DH_PASS'
         )]) {
-          sh '''
-            set +x
+          sh '''#!/bin/bash
+            set -euo pipefail
             DOCKER_CONFIG="$(mktemp -d)"
             export DOCKER_CONFIG
             trap 'rm -rf "$DOCKER_CONFIG"' EXIT
@@ -77,7 +84,8 @@ pipeline {
       steps {
         // P5 (Teammate 2): set env.DEPLOYED = 'true' here inside script{} for rollback.
         withCredentials([string(credentialsId: 'ansible-vault-pass', variable: 'ANSIBLE_VAULT_PASS')]) {
-          sh '''
+          sh '''#!/bin/bash
+            set -euo pipefail
             ansible-playbook -i "$INVENTORY" ansible/playbooks/deploy.yml \
               -e "image_tag=$IMAGE_TAG" -e "dockerhub_ns=$DOCKERHUB_NS" \
               --vault-password-file ansible/scripts/vault-pass.sh
@@ -88,7 +96,8 @@ pipeline {
 
     stage('Verify') {
       steps {
-        sh '''
+        sh '''#!/bin/bash
+          set -euo pipefail
           bash scripts/smoke.sh "$IMAGE_TAG"
         '''
         // P5 (Teammate 2): add the live eval and mark_good.yml here.
@@ -99,7 +108,7 @@ pipeline {
   post {
     // P5 (Teammate 2): add failure { } here to run rollback.yml when env.DEPLOYED == 'true'.
     cleanup {
-      sh '''
+      sh '''#!/bin/bash
         docker image rm "niyam-api-test:${IMAGE_TAG:-none}" \
           "$DOCKERHUB_NS/niyam-api:${IMAGE_TAG:-none}" \
           "$DOCKERHUB_NS/niyam-web:${IMAGE_TAG:-none}" >/dev/null 2>&1 || true
