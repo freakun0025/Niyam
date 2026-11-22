@@ -5,6 +5,7 @@ services/*
 !services/api/
 !data/
 data/*
+!data/corpus/
 !data/fixtures/
 
 **/__pycache__

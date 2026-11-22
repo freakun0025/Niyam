@@ -1,0 +1,340 @@
+# Real corpus: current RBI commercial-bank Directions and SEBI circulars.
+version: 1
+documents:
+- doc_id: rbi-2025-commercial-banks-credit-facilities
+  file: raw/rbi-2025-commercial-banks-credit-facilities.pdf
+  title: Reserve Bank of India (Commercial Banks - Credit Facilities) Directions, 2025 (Updated as on October 1, 2026)
+  regulator: RBI
+  doc_type: master_direction
+  circular_no: RBI/DOR/2025-26/154
+  issued_date: 2025-11-28
+  source_url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/154MD.PDF
+  sha256: 7af28442c871e05e7d144c5708fd6ccd2b736554b4705e8a50b47c5a645d4f45
+  tags:
+  - lending
+  - digital-lending
+  - credit
+- doc_id: rbi-2025-commercial-banks-credit-information-reporting
+  file: raw/rbi-2025-commercial-banks-credit-information-reporting.pdf
+  title: Reserve Bank of India (Commercial Banks - Credit Information Reporting) Directions, 2025 (Updated as on July 1, 2026)
+  regulator: RBI
+  doc_type: master_direction
+  circular_no: RBI/DOR/2025-26/156
+  issued_date: 2025-11-28
+  source_url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/156MD.PDF
+  sha256: f76e298cc848148c9b4f9875f5b680bb83c3722d3857d1266cfea7ccf82c79b9
+  tags:
+  - credit-information
+- doc_id: rbi-2025-commercial-banks-digital-banking-channels
+  file: raw/rbi-2025-commercial-banks-digital-banking-channels.pdf
+  title: Reserve Bank of India (Commercial Banks - Digital Banking Channels Authorisation) Directions, 2025
+  regulator: RBI
+  doc_type: master_direction
+  circular_no: RBI/DOR/2025-26/380
+  issued_date: 2025-11-28
+  source_url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/380MD.PDF
+  sha256: bff23ad6d0b98ce0ca2ac9f4d44bb9e8e5ad6f3a6c0206d6a21743004e053132
+  tags:
+  - digital-banking
+- doc_id: rbi-2025-commercial-banks-interest-rates-on-advances
+  file: raw/rbi-2025-commercial-banks-interest-rates-on-advances.pdf
+  title: Reserve Bank of India (Commercial Banks - Interest Rates on Advances) Directions, 2025
+  regulator: RBI
+  doc_type: master_direction
+  circular_no: RBI/DOR/2025-26/161
+  issued_date: 2025-11-28
+  source_url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/161MD.PDF
+  sha256: 3e9a0ff82ed85195d517cb91867dc3db26d88430843e2cef3e377d4790b36cc4
+  tags:
+  - interest-rates
+  - lending
+- doc_id: rbi-2025-commercial-banks-know-your-customer
+  file: raw/rbi-2025-commercial-banks-know-your-customer.pdf
+  title: Reserve Bank of India (Commercial Banks - Know Your Customer) Directions, 2025 (Updated as on October 1, 2026)
+  regulator: RBI
+  doc_type: master_direction
+  circular_no: RBI/DOR/2025-26/169
+  issued_date: 2025-11-28
+  source_url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/169MD.PDF
+  sha256: a2f5e724f1a21282fddd03e2bae1306eeef34663c953b9e111f8d12bf6bfdbdb
+  tags:
+  - kyc
+- doc_id: rbi-2025-commercial-banks-responsible-business-conduct
+  file: raw/rbi-2025-commercial-banks-responsible-business-conduct.pdf
+  title: Reserve Bank of India (Commercial Banks - Responsible Business Conduct) Directions, 2025 (Updated as on October 1, 2026)
+  regulator: RBI
+  doc_type: master_direction
+  circular_no: RBI/DOR/2025-26/170
+  issued_date: 2025-11-28
+  source_url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/170MD.PDF
+  sha256: 7352c4e12185215788d22cbd53390ca86a13527fa74d5349590d8437aa4f01cb
+  tags:
+  - customer-protection
+  - grievance
+- doc_id: sebi-2023-scores-odr-circular
+  file: raw/sebi-2023-scores-odr-circular.pdf
+  title: Redressal of investor grievances through the SEBI Complaint Redressal (SCORES) Platform and linking it to Online Dispute Resolution platform
+  regulator: SEBI
+  doc_type: circular
+  circular_no: SEBI/HO/OIAE/IGRD/CIR/P/2023/156
+  issued_date: 2023-09-20
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/sep-2023/1695456916964.pdf
+  sha256: 26c230d804f1bbfd190e8187698276544a4a025b4a9f74a23e72b11a0abff40b
+  tags:
+  - scores
+  - investor-grievance
+  - odr
+- doc_id: sebi-2026-alignment-of-sebi-s-cyber-incident-reporting-p-95a7d0
+  file: raw/sebi-2026-alignment-of-sebi-s-cyber-incident-reporting-p-95a7d0.pdf
+  title: Alignment of SEBI's Cyber Incident Reporting Portal with FIRE Format
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-08-24
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/aug-2026/1787569463244.pdf
+  sha256: dfa78c1c81d50f9b61964ddeb7d8ee7dfa0d5ca516acb45459ca1fab14a7c1f1
+  tags:
+  - sebi
+- doc_id: sebi-2026-cooling-off-period-for-offer-for-sale-by-priva-05b6da
+  file: raw/sebi-2026-cooling-off-period-for-offer-for-sale-by-priva-05b6da.pdf
+  title: Cooling off period for offer for sale by Private listed InvITs
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-11-02
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1793619502649.pdf
+  sha256: 63d788e30a08157e74125be9b081720dca21473d1f70e2b837ea656277fa193f
+  tags:
+  - sebi
+- doc_id: sebi-2026-display-of-investor-awareness-message-s-by-sto-dff688
+  file: raw/sebi-2026-display-of-investor-awareness-message-s-by-sto-dff688.pdf
+  title: Display of “investor awareness message(s)” by stock brokers on their trading apps and websites, under Project Jagrook
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-01
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1790852162769.pdf
+  sha256: 32fb02a8ba1e640c9b6cf74f85f3a7fc049163c73b8ab03e2aa9f75b98dbb2cd
+  tags:
+  - sebi
+- doc_id: sebi-2026-exemption-from-the-requirement-of-mandatory-me-ad61ce
+  file: raw/sebi-2026-exemption-from-the-requirement-of-mandatory-me-ad61ce.pdf
+  title: Exemption from the requirement of mandatory merchant banker appointment for debt issued through private placement by certain listed issuers
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-07
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791374560264.pdf
+  sha256: ccf4a2c2ec9d58da21350c905adbde216f96b2bb7487fcc324d46dc1cf303479
+  tags:
+  - sebi
+- doc_id: sebi-2026-extension-of-timeline-for-compliance-with-term-52f817
+  file: raw/sebi-2026-extension-of-timeline-for-compliance-with-term-52f817.pdf
+  title: Extension of timeline for compliance with terms and conditions by Debenture Trustees (DTs) for carrying out activities outside the purview of SEBI
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-27
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1793167964839.pdf
+  sha256: 2e89e8d6d2ad4017e06808259d8a5f8c5cb192c39130af05c26de711b6394e6b
+  tags:
+  - sebi
+- doc_id: sebi-2026-extension-of-timeline-for-implementation-of-pr-5fc32e
+  file: raw/sebi-2026-extension-of-timeline-for-implementation-of-pr-5fc32e.pdf
+  title: Extension of timeline for implementation of provisions of SEBI Circular dated June 15, 2026 on norms for base price, price bands, call auction in pre-open session and Close-out procedure for Exchange
+    Traded Funds (ETFs)
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-08-28
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/aug-2026/1787914585756.pdf
+  sha256: 456ad5f299578a455d280befb7d9643b7b8d97c0f7f64970f5757c1f8206be16
+  tags:
+  - sebi
+- doc_id: sebi-2026-extension-of-timeline-with-respect-to-complian-86e735
+  file: raw/sebi-2026-extension-of-timeline-with-respect-to-complian-86e735.pdf
+  title: Extension of timeline with respect to compliance of Digital Accessibility Circulars
+  regulator: SEBI
+  doc_type: circular
+  circular_no: SEBI/HO/ITD-1/ITD_VIAP/P/CIR/2025/121
+  issued_date: 2026-10-30
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1793363799724.pdf
+  sha256: c06969a69be229d8b918ac828028633f524219516ade5b5d931a3de734120d0a
+  tags:
+  - sebi
+- doc_id: sebi-2026-framework-for-issuance-of-depository-receipts-3f9885
+  file: raw/sebi-2026-framework-for-issuance-of-depository-receipts-3f9885.pdf
+  title: Framework for Issuance of Depository Receipts on Units of REITs
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-11-02
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1793621551097.pdf
+  sha256: ef028a0f82186ba2f77e29cec4cc9990d95d93352f2ecf67fa74c37a910ecccb
+  tags:
+  - sebi
+- doc_id: sebi-2026-framework-for-issuance-of-depository-receipts-9ff28e
+  file: raw/sebi-2026-framework-for-issuance-of-depository-receipts-9ff28e.pdf
+  title: Framework for Issuance of Depository Receipts on Units of InvITs
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-11-02
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1793621416499.pdf
+  sha256: 5e415b640e60aa7666d7a30c4768ce45e51d0218754afb0f31e204a9398b5252
+  tags:
+  - sebi
+- doc_id: sebi-2026-framework-for-net-settlement-of-funds-for-tran-0963b6
+  file: raw/sebi-2026-framework-for-net-settlement-of-funds-for-tran-0963b6.pdf
+  title: Framework for net settlement of funds for transactions undertaken by mutual fund schemes in cash market
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-11-05
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1793874209372.pdf
+  sha256: fe191f4a649abb8f7cada12baa9a5231bdd42141cf75259553da639793ad4014
+  tags:
+  - sebi
+- doc_id: sebi-2026-introduction-of-credit-risk-o-meter-as-an-addi-053f2b
+  file: raw/sebi-2026-introduction-of-credit-risk-o-meter-as-an-addi-053f2b.pdf
+  title: Introduction of Credit Risk-o-Meter as an additional disclosure mechanism for debt securities
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-07
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791436170839.pdf
+  sha256: b3d456cd2c15917491f15360f355d5a67baba4461b0ba963b7fe160ed66ad5e9
+  tags:
+  - sebi
+- doc_id: sebi-2026-it-resilience-index-for-market-infrastructure-d34443
+  file: raw/sebi-2026-it-resilience-index-for-market-infrastructure-d34443.pdf
+  title: IT Resilience Index for Market Infrastructure Institutions (MIIs)
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-08-24
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/aug-2026/1787568759364.pdf
+  sha256: b04dfd62819300887b70c11163ce4bd1c6ecd84f09509aafef82781fb1caaafe
+  tags:
+  - sebi
+- doc_id: sebi-2026-margin-waiver-on-subsequent-buy-sell-transacti-f40d4d
+  file: raw/sebi-2026-margin-waiver-on-subsequent-buy-sell-transacti-f40d4d.pdf
+  title: Margin Waiver on Subsequent Buy/Sell Transactions Post Early Pay-In (EPI) in Cash Segment
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-22
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1792668596460.pdf
+  sha256: d0db29027da8b6b71769db11772dd4d3f420f2fc9fbef4d709dcd3ed232751d3
+  tags:
+  - sebi
+- doc_id: sebi-2026-rationalisation-of-periodicity-of-kyc-review-f-1935a4
+  file: raw/sebi-2026-rationalisation-of-periodicity-of-kyc-review-f-1935a4.pdf
+  title: Rationalisation of periodicity of KYC review for FPIs
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-30
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1793358139677.pdf
+  sha256: e507471edd4fcaf8ef5a79df02ec082b7a5c959d763a28d45f7aea9c83d7849b
+  tags:
+  - sebi
+- doc_id: sebi-2026-relaxation-in-timeline-with-respect-to-accredi-9995ab
+  file: raw/sebi-2026-relaxation-in-timeline-with-respect-to-accredi-9995ab.pdf
+  title: Relaxation in timeline with respect to Accredited Investor mandate for Angel Funds
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-09-07
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1788788875715.pdf
+  sha256: 30d0dc19c4ab794eb5af010f8a470dc2c12412a8e09b3ec2e12a43f5dc2bf486
+  tags:
+  - sebi
+- doc_id: sebi-2026-reporting-requirement-under-foreign-account-ta-584f10
+  file: raw/sebi-2026-reporting-requirement-under-foreign-account-ta-584f10.pdf
+  title: Reporting requirement under Foreign Account Tax Compliance Act (FATCA) and Common Reporting Standard (CRS) revised through Income-Tax Act, 2025 read with Income-Tax Rules, 2026
+  regulator: SEBI
+  doc_type: circular
+  circular_no: SEBI/HO/MIRSD/SECFATF/P/CIR/2024/12
+  issued_date: 2026-11-11
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1794392501415.pdf
+  sha256: d4495124a4bc9ee8343ecab7117b1ac7c47b543ca3a783fea179f5d10d11c34b
+  tags:
+  - sebi
+- doc_id: sebi-2026-review-of-certain-aspects-of-the-closing-aucti-2301c1
+  file: raw/sebi-2026-review-of-certain-aspects-of-the-closing-aucti-2301c1.pdf
+  title: Review of certain aspects of the Closing Auction Session, market timings and settlement methodology for derivatives contracts
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-15
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1792079571420.pdf
+  sha256: b2bd9c92fdc8bd0b0076792a64cc087dd921037085ff402065acafbe3590f244
+  tags:
+  - sebi
+- doc_id: sebi-2026-review-of-know-your-client-process-for-individ-d548d0
+  file: raw/sebi-2026-review-of-know-your-client-process-for-individ-d548d0.pdf
+  title: Review of Know Your Client process for individual Person Resident Outside India clients
+  regulator: SEBI
+  doc_type: circular
+  circular_no: SEBI/HO/MIRSD/SECFATF/P/CIR/2023/169
+  issued_date: 2026-11-04
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1793791897866.pdf
+  sha256: 306e455603366a5c9d7435ffbc6f9a3669d826f0a62fe14d141a1e66b188b8ad
+  tags:
+  - sebi
+- doc_id: sebi-2026-review-of-position-limits-for-clients-and-pena-523ffc
+  file: raw/sebi-2026-review-of-position-limits-for-clients-and-pena-523ffc.pdf
+  title: Review of Position Limits for Clients and Penalty Provisions for Violation / Breach of Position Limits for Commodity Derivatives Segment
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-09-09
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791806752815.pdf
+  sha256: 8e9bf13a6fd0f6c4ddced36a8f5e7588c200c0eb18d1e17250719de20a16fc51
+  tags:
+  - sebi
+- doc_id: sebi-2026-review-of-provisions-related-to-international-4eb65a
+  file: raw/sebi-2026-review-of-provisions-related-to-international-4eb65a.pdf
+  title: Review of provisions related to International Securities Identification Number (ISIN) for debt securities issued on private placement basis
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-07
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791374056536.pdf
+  sha256: ed232dc6ec7e437a9e699fef14513a5a47bebd0afc6c3d6a7a4b060b5b8bf6b7
+  tags:
+  - sebi
+- doc_id: sebi-2026-review-of-regulatory-requirement-for-maintenan-c8c0d3
+  file: raw/sebi-2026-review-of-regulatory-requirement-for-maintenan-c8c0d3.pdf
+  title: Review of regulatory requirement for maintenance of call records of institutional clients by Research Analysts or Research Entities
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-10-23
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1792753022042.pdf
+  sha256: e5f1aaad0835166b5de10b4ad4b6d25c8e65c752904195e4dc88eae0375b1db4
+  tags:
+  - sebi
+- doc_id: sebi-2026-review-of-the-framework-for-accredited-investo-50b4bc
+  file: raw/sebi-2026-review-of-the-framework-for-accredited-investo-50b4bc.pdf
+  title: Review of the framework for Accredited Investors
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-11-05
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1793874966416.pdf
+  sha256: 7c0bd2a60582fb471fd10d06fb9f757f556449990263bb46d4d48633e413f6fa
+  tags:
+  - sebi
+- doc_id: sebi-2026-revision-of-limits-relating-to-requirement-of-39ea3e
+  file: raw/sebi-2026-revision-of-limits-relating-to-requirement-of-39ea3e.pdf
+  title: Revision of limits relating to requirement of underlying exposure for currency derivatives contracts
+  regulator: SEBI
+  doc_type: circular
+  circular_no: null
+  issued_date: 2026-11-05
+  source_url: https://www.sebi.gov.in/sebi_data/attachdocs/nov-2026/1793872119320.pdf
+  sha256: 335352de99e5e07741bbf83f1f2b8aa5f1f189cc36eb62da829513856b6faf0a
+  tags:
+  - sebi

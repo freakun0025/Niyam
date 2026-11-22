@@ -1,5 +1,5 @@
 ---
-ingest_manifest: /data/fixtures/manifest.yaml
+ingest_manifest: /data/corpus/manifest.yaml
 ingest_ttl_seconds: 600
 ingest_deadline_seconds: 1800
 ingest_wait_retries: 370

@@ -23,6 +23,7 @@ RUN ruff check --no-cache . \
 FROM model AS runtime
 ENV NIYAM_EMBED_CACHE=/models NIYAM_EMBED_OFFLINE=true
 RUN useradd --uid 10001 --create-home --shell /usr/sbin/nologin niyam
+COPY data/corpus /data/corpus
 COPY data/fixtures /data/fixtures
 COPY services/api/app ./app
 # Last, so a new git SHA does not invalidate the dependency and model layers.
